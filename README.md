@@ -1,6 +1,6 @@
 
 # Project AGV
-Dit is de code voor het project AGV
+Dit is de code voor het project AGV van groep B3
 
 Door:
 -	Ryan Verbaan
