@@ -3,8 +3,9 @@
 Dit is de code voor het project AGV van groep B3
 
 Door:
+-	Jelle Vogel			(Projectleider)
+-	Jep Brinkman		(Vice-Projectleider)
+-	Joshua Vinkhuyzen	(Notulist)
 -	Ryan Verbaan
--	Jep Brinkman
--	Jelle Vogel
 -	Kaj Zwinkels
--	Joshua Vinkhuyzen
+
