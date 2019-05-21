@@ -1,10 +1,10 @@
 void setup() {
-  goeie morgen
-    
+  char morgen = "goed";
+  
 
 }
 
 void loop() {
- goeie avond
-
+  if(morgen == "goed")
+    Serial.println("goede morgen")
 }
