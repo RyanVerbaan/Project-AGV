@@ -36,7 +36,7 @@ pinMode(Ultrasoon_Rechts_Voor, INPUT);
 pinMode(Ultrasoon_Links_Achter, INPUT);
 pinMode(Ultrasoon_Rechts_Achter, INPUT);
 
-pinMode(Time_Of_Flight_Links, INPUT);
+pinMode(Time_Of_Flight_Links, INPUT);//AANPASSEN? ToF links en rechts op zelfde pin met switches die omschakelen na het geheel uitvoeren van een bochtfunctie
 pinMode(Time_Of_Flight_Rechts, INPUT);
 
 pinMode(Signaal_Ledjes, OUTPUT);
@@ -62,13 +62,13 @@ Actie_Proces_Obstakel()
 }
 
 Bocht_Links()
-{
+{ //hoeveelheid_bochten++;
   digitalWrite(Stepper_Links_Pin, Lage_Bocht_Snelheid);
   digitalWrite(Stepper_Rechts_Pin, Hoge_Bocht_Snelheid);
 }
 
 Bocht_Rechts()
-{
+{ //ToF_switch, LOW)
   digitalWrite(Stepper_Links_Pin, Hoge_Bocht_Snelheid);
   digitalWrite(Stepper_Rechts_Pin, Lage_Bocht_Snelheid);  
 }
@@ -82,9 +82,9 @@ Volg_Modus()
 void loop() {
   switch(Stap) //Switchcase met states
   {
-    case (Idle):
+    case (Idle): 
       //Motoren uit en wachten
-      digitalWrite(Stepper_Links_Pin, LOW);
+      digitalWrite(Stepper_Links_Pin, LOW); 
       digitalWrite(Stepper_Rechts_Pin, LOW);
       break;
       
