@@ -1,3 +1,23 @@
+#include <Stepper.h>
+
+//Aantal steps op de motor
+#define STEPS     200
+//Pinnen voor linker stepper  //Mogen digitale pinnen zijn
+#define Lpin_ain2  22
+#define Lpin_ain1  23
+#define Lpin_bin1  24
+#define Lpin_bin2  25
+//Pinnen voor retcher stepper
+#define Rpin_ain1  1
+#define Rpin_ain2  0
+#define Rpin_bin1  2
+#define Rpin_bin2  3
+
+#define Motor_speed_max     100                 //100rpm is max reacheble speed op 5V
+#define Motor_speed_follow  (Motor_speed_max/7) //70% speed for following person
+#define Motor_speed_half    (Motor_speed_max/2)
+#define Motor_speed_stop    0                   //Set motor stil but is still running
+
 #define Volg_Modus -1
 #define Idle 0
 #define Rijden 1
@@ -25,56 +45,67 @@ int Status = 0;
 #define Time_Of_Flight_Rechts
 #define Signaal_Ledjes
 
+
+Stepper stepper_links(STEPS, Lpin_ain2, Lpin_ain1, Lpin_bin1, Lpin_bin2);
+Stepper stepper_rechts(STEPS, Rpin_ain2, Rpin_ain1, Rpin_bin1, Rpin_bin2);
+
 void setup() 
-{
-pinMode(Stepper_Links_Pin, OUTPUT);
-pinMode(Stepper_Rechts_Pin, OUTPUT);
-
-pinMode(Ultrasoon_Voor, INPUT);
-pinMode(Ultrasoon_Links_Voor, INPUT);
-pinMode(Ultrasoon_Rechts_Voor, INPUT);
-pinMode(Ultrasoon_Links_Achter, INPUT);
-pinMode(Ultrasoon_Rechts_Achter, INPUT);
-
-pinMode(Time_Of_Flight_Links, INPUT);//AANPASSEN? ToF links en rechts op zelfde pin met switches die omschakelen na het geheel uitvoeren van een bochtfunctie
-pinMode(Time_Of_Flight_Rechts, INPUT);
-
-pinMode(Signaal_Ledjes, OUTPUT);
-
-digitalWrite(Stepper_Links_Pin, LOW);
-digitalWrite(Stepper_Rechts_Pin, LOW);
-}
-
-Actie_Proces_Gewas()
-{
-  digitalWrite(Stepper_Links_Pin, LOW);
-  digitalWrite(Stepper_Rechts_Pin, LOW);
-  delay(100);
-  digitalWrite(Signaal_Ledjes, HIGH);
-  delay(100);
-  digitalWrite(Signaal_Ledjes, LOW);
-}
-
-Actie_Proces_Obstakel()
-{
-  digitalWrite(Stepper_Links_Pin, LOW);
-  digitalWrite(Stepper_Rechts_Pin, LOW);
-}
-
-Bocht_Links()
-{ //hoeveelheid_bochten++;
-  digitalWrite(Stepper_Links_Pin, Lage_Bocht_Snelheid);
-  digitalWrite(Stepper_Rechts_Pin, Hoge_Bocht_Snelheid);
-}
-
-Bocht_Rechts()
-{ //ToF_switch, LOW)
-  digitalWrite(Stepper_Links_Pin, Hoge_Bocht_Snelheid);
-  digitalWrite(Stepper_Rechts_Pin, Lage_Bocht_Snelheid);  
-}
-
-Volg_Modus()
-{
+{  
+  pinMode(Ultrasoon_Voor, INPUT);
+  pinMode(Ultrasoon_Links_Voor, INPUT);
+  pinMode(Ultrasoon_Rechts_Voor, INPUT);
+  pinMode(Ultrasoon_Links_Achter, INPUT);
+  pinMode(Ultrasoon_Rechts_Achter, INPUT);
+  
+  pinMode(Time_Of_Flight_Links, INPUT);//AANPASSEN? ToF links en rechts op zelfde pin met switches die omschakelen na het geheel uitvoeren van een bochtfunctie
+  pinMode(Time_Of_Flight_Rechts, INPUT);
+  
+  pinMode(Signaal_Ledjes, OUTPUT);
+  
+  stepper_links.setSpeed(Motor_speed_stop);
+  stepper_rechts.setSpeed(Motor_speed_stop);
+  }
+  
+  Actie_Proces_Gewas()
+  {
+    stepper_links.setSpeed(Motor_speed_stop);
+    stepper_rechts.setSpeed(Motor_speed_stop);
+    delay(100);
+    digitalWrite(Signaal_Ledjes, HIGH);
+    delay(100);
+    digitalWrite(Signaal_Ledjes, LOW);
+  }
+  
+  Actie_Proces_Obstakel()
+  {
+    stepper_links.setSpeed(Motor_speed_stop);
+    stepper_rechts.setSpeed(Motor_speed_stop);
+  }
+  
+  Bocht(value voor bocht links of rechts)
+  {
+    //ToF sensoren uit
+    if(bocht == rechts)                         //Bij een bocht naar links of rechts wordt de binnenste motor op 50% gezet
+    {
+      stepper_links.setSpeed(Motor_speed_half);
+      stepper_rechts.setSpeed(Motor_speed_max);
+      stepper_links.step(5*STEPS);            //Het buitenste wiel moet een grotere afstand afleggen
+      stepper_rechts.step(4*STEPS);
+    }
+  
+    if(bocht == links)
+    {
+      //Bochten ++
+      stepper_links.setSpeed(Motor_speed_half);
+      stepper_rechts.setSpeed(Motor_speed_max);
+      stepper_links.step(4*STEPS);
+      stepper_rechts.step(5*STEPS);
+    }
+  }
+  
+  
+  Volg_Modus()
+  {
   
 }
 
@@ -84,14 +115,14 @@ void loop() {
   {
     case (Idle): 
       //Motoren uit en wachten
-      digitalWrite(Stepper_Links_Pin, LOW); 
-      digitalWrite(Stepper_Rechts_Pin, LOW);
+      stepper_links.setSpeed(Motor_speed_stop);
+      stepper_rechts.setSpeed(Motor_speed_stop);
       break;
       
     case (Rijden):
       //Steppers op standaard rijsnelheid
-      digitalWrite(Stepper_Links_Pin, Rij_Snelheid);
-      digitalWrite(Stepper_Rechts_Pin, Rij_Snelheid);
+      stepper_links.setSpeed(Motor_speed_max);
+      stepper_rechts.setSpeed(Motor_speed_max);
       break;
       
     case (Actie_Proces_Gewas):
@@ -99,12 +130,9 @@ void loop() {
       Actie_Proces_Gewas();
       break;
       
-    case (Actie_Proces_Obstakel):
+    case (Actie_Proces_Obstakel): //Actie_Proces_Bocht?
       //Gepaste Afstand houden --> Stilstaan of langzamer gaan rijden.
-      if(Koers == Links_Afslaan)
-      Bocht_Links();
-      if(Koers == Rechts_Afslaan)
-      Bocht_Rechts();
+      Bocht(value voor links of rechts);
       break; 
           
     case (Actie_Proces_Koers):
