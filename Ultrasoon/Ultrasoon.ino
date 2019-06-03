@@ -10,17 +10,19 @@
 #define Ultrasoon_Links_Achter_Echo 5
 #define Ultrasoon_Rechts_Achter_Echo 3
 
-#define Voor_Led 20
-#define Links_Voor_Led 21
-#define Rechts_Voor_Led 22
-#define Gewas_Led 23
+#define Voor_Led 21
+#define Links_Voor_Led 20
+#define Rechts_Voor_Led 18
+#define Gewas_Led 19
 
 #define Arm_Lengte 80
 #define Gewas_Afstand 100
 
-int Distance = 0;
-int Distance_2 = 0;
-int Stap = 0;
+float Distance = 0;
+long Distance_Gem = 0;
+float Distance_2 = 0;
+long Distance_2_Gem = 0;
+int Stap = 1;
 
 #define Rijden 0
 #define Volgmodus 1
@@ -45,88 +47,106 @@ void setup() {
   digitalWrite(Ultrasoon_Rechts_Voor_Trigger, LOW);
   digitalWrite(Ultrasoon_Links_Achter_Trigger, LOW);
   digitalWrite(Ultrasoon_Rechts_Achter_Trigger, LOW);
+
+  digitalWrite(Voor_Led, LOW);
+  digitalWrite(Links_Voor_Led, LOW);
+  digitalWrite(Rechts_Voor_Led, LOW);
+  digitalWrite(Gewas_Led, LOW);
 }
 
 int Distance_Cal(int trigPin, int echoPin)
 {
-  int duration;
-  int distance;
+  float duration;
+  float distance;
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   duration = pulseIn(echoPin, HIGH);
-  distance = duration*0.34/2;
+  distance = duration* 34/2;
   return distance;
 }
 
 
 void loop() {
-
+Serial.println("--------------------------");
 switch(Stap)
-{
+{ 
   case (Rijden):
     Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);
-    if(Distance < Arm_Lengte)
+    Serial.print("Distance: ");
+    Serial.println(Distance);
+    if(Distance < Arm_Lengte || Distance > 0)
     {
     digitalWrite(Voor_Led, HIGH);  
     } 
-    else
-    {
-      digitalWrite(Voor_Led, LOW);  
-    }
+//    else
+//    {
+//      digitalWrite(Voor_Led, LOW);  
+//    }
 
     Distance = Distance_Cal(Ultrasoon_Links_Achter_Trigger, Ultrasoon_Links_Achter_Echo);
-    if(Distance < Gewas_Afstand)
+    Serial.print("Distance: ");
+    Serial.println(Distance );
+    
+    if(Distance < Gewas_Afstand || Distance > 0)
     {
       digitalWrite(Gewas_Led, HIGH);  
     }
-    else
-    {
-      digitalWrite(Gewas_Led, LOW);
-    }
+//    else
+//    {
+//      digitalWrite(Gewas_Led, LOW);
+//    }
 
     Distance = Distance_Cal(Ultrasoon_Rechts_Achter_Trigger, Ultrasoon_Rechts_Achter_Echo);
-    if(Distance < Gewas_Afstand)
+    Serial.print("Distance: ");
+    Serial.println(Distance);
+    if(Distance < Gewas_Afstand || Distance > 0)
     {
       digitalWrite(Gewas_Led, HIGH);  
     }
-    else
-    {
-      digitalWrite(Gewas_Led, LOW);
-    }
+//    else
+//    {
+//      digitalWrite(Gewas_Led, LOW);
+//    }
     break;
 
     
   case (Volgmodus):
     Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);
-    if(Distance < Arm_Lengte)
+    Serial.print("Distance: ");
+    Serial.println(Distance );
+    if(Distance < Arm_Lengte || Distance > 0)
     {
     digitalWrite(Voor_Led, HIGH);  
     } 
-    else
-    {
-      digitalWrite(Voor_Led, LOW);  
-    }
+//    else
+//    {
+//      digitalWrite(Voor_Led, LOW);  
+//    }
 
     Distance_2 = Distance_Cal(Ultrasoon_Links_Voor_Trigger, Ultrasoon_Links_Voor_Echo);
-    if(Distance_2 < Distance)
+    Serial.print("Distance: ");
+    Serial.println(Distance_2 );
+    if(Distance_2 < Distance || Distance > 0)
     {
       digitalWrite(Links_Voor_Led, HIGH);  
     }
-    else
-    {
-      digitalWrite(Links_Voor_Led, LOW);
-    }
+//    else
+//    {
+//      digitalWrite(Links_Voor_Led, LOW);
+//    }
 
     Distance_2 = Distance_Cal(Ultrasoon_Rechts_Voor_Trigger, Ultrasoon_Rechts_Voor_Echo);
-    if(Distance_2 < Distance)
+    Serial.print("Distance: ");
+    Serial.println(Distance_2 );
+    if(Distance_2 < Distance || Distance > 0)
     {
       digitalWrite(Rechts_Voor_Led, HIGH);  
     }
-    else
-    {
-      digitalWrite(Rechts_Voor_Led, LOW);
-    }
+//    else
+//    {
+//      digitalWrite(Rechts_Voor_Led, LOW);
+//    }
     break;
 }
 }
