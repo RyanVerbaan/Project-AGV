@@ -14,12 +14,12 @@
 #define Rpin_bin1  28
 #define Rpin_bin2  29
 
-#define Motor_speed_max     120                 //100rpm is max reacheble speed op 5V
-#define Motor_speed_follow  (Motor_speed_max/7) //70% speed for following person
-#define Motor_speed_half    (Motor_speed_max/2)
-#define Motor_speed_stop    0                   //Set motor stil but is still running
-#define Aantal_rond         2*STEPS
-#define Aantal_rond         3*STEPS
+#define Motor_Speed_Max     120                 //100rpm is max reacheble speed op 5V
+#define Motor_Speed_Follow  (Motor_speed_max/7) //70% speed for following person
+#define Motor_Speed_Half    (Motor_speed_max/2)
+#define Motor_Speed_Stop    0                   //Set motor stil but is still running
+#define Aantal_Rond         2*STEPS
+#define Aantal_Rond         3*STEPS
 
 #define Volg_Modus            -1
 #define Idle                  0
@@ -57,16 +57,18 @@ int Koers = 0;
 #define Time_Of_Flight_Rechts 22
 #define Signaal_Ledjes 23
 
-Stepper stepper_links(STEPS, Lpin_ain2, Lpin_ain1, Lpin_bin1, Lpin_bin2);
-Stepper stepper_rechts(STEPS, Rpin_ain2, Rpin_ain1, Rpin_bin1, Rpin_bin2);
+Stepper Stepper_Links(STEPS, Lpin_ain2, Lpin_ain1, Lpin_bin1, Lpin_bin2);
+Stepper Stepper_Rechts(STEPS, Rpin_ain2, Rpin_ain1, Rpin_bin1, Rpin_bin2);
 
 void Actie_Proces_Gewas_Functie();
 void Actie_Proces_Obstakel_Functie();
-void Volg_Modus();
-void Actie_Proces_Koers_Functie();
+void Volg_Modus_Functie();
+void Actie_Proces_Koers_Functie(Waarde voor bocht links of rechts);
+int Distance_Cal(int trigPin, int echoPin);
 
 int Stap = 0;
 int Status = 0;
+float Distance = 0;
 
 void setup() 
 {
@@ -93,43 +95,20 @@ void setup()
   pinMode(Signaal_Ledjes, OUTPUT);
 }
 
-int Distance_Cal(int trigPin, int echoPin)
-{
-  float duration;
-  float distance;
-  float gem_distance;
-  for(int i = 0; i < 10; i++)
-  {
-    digitalWrite(trigPin, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(trigPin, LOW);
-    duration = pulseIn(echoPin, HIGH);
-    distance = duration* 0.34/2; 
-    if(distance > 0)
-    {
-      gem_distance = gem_distance + distance;
-    }
-    else
-    {
-      i--;
-    }
-  }
-  return gem_distance;
-}
 
 void loop() {
   switch(Stap) //Switchcase met states
   {
     case (Idle): 
       //Motoren uit en wachten
-        stepper_links.setSpeed(Motor_speed_stop);
-        stepper_rechts.setSpeed(Motor_speed_stop);
+        Stepper_Links.setSpeed(Motor_Speed_Stop);
+        Stepper_Rechts.setSpeed(Motor_Speed_Stop);
       break;
       
     case (Rijden):
       //Steppers op standaard rijsnelheid
-      digitalWrite(Stepper_Links_Pin, Rij_Snelheid);
-      digitalWrite(Stepper_Rechts_Pin, Rij_Snelheid);
+      Stepper_Links.setSpeed(Motor_Speed_Max);
+      Stepper_Rechts.setSpeed(Motor_Speed_Max);
       break;
       
     case (Actie_Proces_Gewas):
@@ -220,8 +199,8 @@ void loop() {
 
 void Actie_Proces_Gewas_Functie()
 {
-  stepper_links.setSpeed(Motor_speed_stop);
-  stepper_rechts.setSpeed(Motor_speed_stop);
+  Stepper_Links.setSpeed(Motor_Speed_Stop);
+  Stepper_Rechts.setSpeed(Motor_Speed_Stop);
   delay(100);
   digitalWrite(Signaal_Ledjes, HIGH);
   delay(100);
@@ -230,41 +209,65 @@ void Actie_Proces_Gewas_Functie()
 
 void Actie_Proces_Obstakel_Functie()
 {
-  stepper_links.setSpeed(Motor_speed_stop);
-  stepper_rechts.setSpeed(Motor_speed_stop);
+  Stepper_Links.setSpeed(Motor_Speed_Stop);
+  Stepper_Rechts.setSpeed(Motor_Speed_Stop);
 }
 
-void Actie_Proces_Koers_Functie()
+void Actie_Proces_Koers_Functie(Waarde voor bocht links of rechts)
 {
     //ToF sensoren uit
   if(bocht == rechts)                         //Bij een bocht naar links of rechts wordt de binnenste motor op 50% gezet
   {
-    stepper_links.setSpeed(Motor_speed_half);
-    stepper_rechts.setSpeed(Motor_speed_max);
+    Stepper_Links.setSpeed(Motor_Speed_Half);
+    Stepper_Rechts.setSpeed(Motor_Speed_Max);
     
     for(i = 0; i<Aantal_rond_bocht; i++)
     {
-      stepper_links.step(2);      //Het linker wiel moet een grotere afstand af leggen. gekozen voor 3x zo groot
-      stepper_rechts.step(1);
+      Stepper_Links.step(2);      //Het linker wiel moet een grotere afstand af leggen. gekozen voor 3x zo groot
+      Stepper_Rechts.step(1);
     }
   }
 
   if(bocht == links)
   {
     //Bochten ++
-    stepper_links.setSpeed(Motor_speed_half);
-    stepper_rechts.setSpeed(Motor_speed_max);
+    Stepper_Links.setSpeed(Motor_Speed_Half);
+    Stepper_Rechts.setSpeed(Motor_Speed_Max);
     for(i = 0; i<Aantal_rond_bocht; i++)
     {
-    stepper_rechst.step(2);      //Het rechter wiel moet een grotere afstand af leggen. gekozen voor 3x zo groot
-    stepper_links.step(1);
+    Stepper_Rechts.step(2);      //Het rechter wiel moet een grotere afstand af leggen. gekozen voor 3x zo groot
+    Stepper_Links.step(1);
     }
   }
 }
 
-void Volg_Modus()
+void Volg_Modus_Functie()
 {
-  stepper_links.setSpeed(Motor_speed_follow);
-  stepper_rechts.setSpeed(Motor_speed_follow);
+  Stepper_Links.setSpeed(Motor_speed_follow);
+  Stepper_Rechts.setSpeed(Motor_speed_follow);
   //if statements met versnellen van de motor/vertragen moeten hier komen
+}
+
+int Distance_Cal(int trigPin, int echoPin)
+{
+  float duration;
+  float distance;
+  float gem_distance;
+  for(int i = 0; i < 10; i++)
+  {
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+    duration = pulseIn(echoPin, HIGH);
+    distance = duration* 0.34/2; 
+    if(distance > 0)
+    {
+      gem_distance = gem_distance + distance;
+    }
+    else
+    {
+      i--;
+    }
+  }
+  return gem_distance;
 }
