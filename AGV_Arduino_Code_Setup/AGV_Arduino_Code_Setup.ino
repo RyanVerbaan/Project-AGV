@@ -59,6 +59,11 @@ int Status = 0;
 Stepper stepper_links(STEPS, Lpin_ain2, Lpin_ain1, Lpin_bin1, Lpin_bin2);
 Stepper stepper_rechts(STEPS, Rpin_ain2, Rpin_ain1, Rpin_bin1, Rpin_bin2);
 
+void Actie_Proces_Gewas_Functie();
+void Actie_Proces_Obstakel_Functie();
+void Volg_Modus();
+
+
 void setup() 
 {
 pinMode(Ultrasoon_Voor, INPUT);
@@ -72,62 +77,6 @@ pinMode(Time_Of_Flight_Rechts, INPUT);
 
 pinMode(Signaal_Ledjes, OUTPUT);
 
-}
-
-void Actie_Proces_Gewas_Functie()
-{
-  stepper_links.setSpeed(Motor_speed_stop);
-  stepper_rechts.setSpeed(Motor_speed_stop);
-  delay(100);
-  digitalWrite(Signaal_Ledjes, HIGH);
-  delay(100);
-  digitalWrite(Signaal_Ledjes, LOW);
-}
-
-void Actie_Proces_Obstakel_Functie()
-{
-  stepper_links.setSpeed(Motor_speed_stop);
-  stepper_rechts.setSpeed(Motor_speed_stop);
-}
-
-void Actie_Proces_Koers_Functie()
-{
-  
-}
-
-void Bocht(value voor bocht links of rechts)
-{
-  //ToF sensoren uit
-  if(bocht == rechts)                         //Bij een bocht naar links of rechts wordt de binnenste motor op 50% gezet
-  {
-    stepper_links.setSpeed(Motor_speed_half);
-    stepper_rechts.setSpeed(Motor_speed_max);
-    
-    for(i = 0; i<Aantal_rond_bocht; i++)
-    {
-      stepper_links.step(2);      //Het linker wiel moet een grotere afstand af leggen. gekozen voor 3x zo groot
-      stepper_rechts.step(1);
-    }
-  }
-
-  if(bocht == links)
-  {
-    //Bochten ++
-    stepper_links.setSpeed(Motor_speed_half);
-    stepper_rechts.setSpeed(Motor_speed_max);
-    for(i = 0; i<Aantal_rond_bocht; i++)
-    {
-    stepper_rechst.step(2);      //Het rechter wiel moet een grotere afstand af leggen. gekozen voor 3x zo groot
-    stepper_links.step(1);
-    }
-  }
-}
-
-void Volg_Modus()
-{
-  stepper_links.setSpeed(Motor_speed_follow);
-  stepper_rechts.setSpeed(Motor_speed_follow);
-  //if statements met versnellen van de motor/vertragen moeten hier komen
 }
 
 void loop() {
@@ -219,4 +168,34 @@ void loop() {
     case (Volg_Modus):
       break;
   }
+}
+
+
+
+void Actie_Proces_Gewas_Functie()
+{
+  stepper_links.setSpeed(Motor_speed_stop);
+  stepper_rechts.setSpeed(Motor_speed_stop);
+  delay(100);
+  digitalWrite(Signaal_Ledjes, HIGH);
+  delay(100);
+  digitalWrite(Signaal_Ledjes, LOW);
+}
+
+void Actie_Proces_Obstakel_Functie()
+{
+  stepper_links.setSpeed(Motor_speed_stop);
+  stepper_rechts.setSpeed(Motor_speed_stop);
+}
+
+void Actie_Proces_Koers_Functie()
+{
+  
+}
+
+void Volg_Modus()
+{
+  stepper_links.setSpeed(Motor_speed_follow);
+  stepper_rechts.setSpeed(Motor_speed_follow);
+  //if statements met versnellen van de motor/vertragen moeten hier komen
 }
