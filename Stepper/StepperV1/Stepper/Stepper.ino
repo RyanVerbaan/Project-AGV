@@ -9,10 +9,10 @@
 #define Lpin_bin1  24
 #define Lpin_bin2  25
 //Pinnen voor retcher stepper
-#define Rpin_ain2  26
-#define Rpin_ain1  27
-#define Rpin_bin1  28
-#define Rpin_bin2  29
+#define Rpin_ain2  28
+#define Rpin_ain1  29
+#define Rpin_bin1  30
+#define Rpin_bin2  31
 
 #define Motor_speed_max     120                 //100rpm is max reacheble speed op 5V
 #define Motor_speed_follow  (Motor_speed_max/7) //70% speed for following person
@@ -54,7 +54,7 @@ void loop()
   //delay(0); // max delay tussen steps around 6~7 miliseconde
  //}
 }
-
+/*
 
 void Bocht(value voor bocht links of rechts)
 {
@@ -96,3 +96,5 @@ void Gewas()
   stepper_links.setSpeed(Motor_speed_stop);
   stepper_rechts.setSpeed(Motor_speed_stop);
 }
+
+*/
