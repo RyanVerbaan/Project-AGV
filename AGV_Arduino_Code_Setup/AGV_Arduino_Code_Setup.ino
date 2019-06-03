@@ -1,3 +1,26 @@
+#include <Stepper.h>
+
+//Defines voor stepper motor(A_Mega)
+//Aantal steps op de motor
+#define STEPS     200
+//Pinnen voor linker stepper  //Mogen digitale pinnen zijn
+#define Lpin_ain2  22
+#define Lpin_ain1  23
+#define Lpin_bin1  24
+#define Lpin_bin2  25
+//Pinnen voor retcher stepper
+#define Rpin_ain2  26
+#define Rpin_ain1  27
+#define Rpin_bin1  28
+#define Rpin_bin2  29
+
+#define Motor_speed_max     120                 //100rpm is max reacheble speed op 5V
+#define Motor_speed_follow  (Motor_speed_max/7) //70% speed for following person
+#define Motor_speed_half    (Motor_speed_max/2)
+#define Motor_speed_stop    0                   //Set motor stil but is still running
+#define Aantal_rond         2*STEPS
+#define Aantal_rond         3*STEPS
+
 #define Volg_Modus -1
 #define Idle 0
 #define Rijden 1
@@ -21,9 +44,6 @@ int Koers = 0;
 int Stap = 0;
 int Status = 0;
 
-#define Stepper_Links_Pin 1
-#define Stepper_Rechts_Pin 2
-
 #define Ultrasoon_Voor_Trigger 12
 #define Ultrasoon_Links_Voor_Trigger 10
 #define Ultrasoon_Rechts_Voor_Trigger 8
@@ -39,6 +59,9 @@ int Status = 0;
 #define Time_Of_Flight_Links 20
 #define Time_Of_Flight_Rechts 22
 #define Signaal_Ledjes 23
+
+Stepper stepper_links(STEPS, Lpin_ain2, Lpin_ain1, Lpin_bin1, Lpin_bin2);
+Stepper stepper_rechts(STEPS, Rpin_ain2, Rpin_ain1, Rpin_bin1, Rpin_bin2);
 
 void setup() 
 {
@@ -66,9 +89,6 @@ void setup()
   pinMode(Time_Of_Flight_Rechts, INPUT);
 
   pinMode(Signaal_Ledjes, OUTPUT);
-
-  digitalWrite(Stepper_Links_Pin, LOW);
-  digitalWrite(Stepper_Rechts_Pin, LOW);
 }
 
 int Distance_Cal(int trigPin, int echoPin)
@@ -97,8 +117,8 @@ int Distance_Cal(int trigPin, int echoPin)
 
 void Actie_Proces_Gewas_Functie()
 {
-  digitalWrite(Stepper_Links_Pin, LOW);
-  digitalWrite(Stepper_Rechts_Pin, LOW);
+  stepper_links.setSpeed(Motor_speed_stop);
+  stepper_rechts.setSpeed(Motor_speed_stop);
   delay(100);
   digitalWrite(Signaal_Ledjes, HIGH);
   delay(100);
@@ -107,20 +127,44 @@ void Actie_Proces_Gewas_Functie()
 
 void Actie_Proces_Obstakel_Functie()
 {
-  digitalWrite(Stepper_Links_Pin, LOW);
-  digitalWrite(Stepper_Rechts_Pin, LOW);
+  stepper_links.setSpeed(Motor_speed_stop);
+  stepper_rechts.setSpeed(Motor_speed_stop);
 }
 
 void Actie_Proces_Koers_Functie()
 {
-  
+    //ToF sensoren uit
+  if(bocht == rechts)                         //Bij een bocht naar links of rechts wordt de binnenste motor op 50% gezet
+  {
+    stepper_links.setSpeed(Motor_speed_half);
+    stepper_rechts.setSpeed(Motor_speed_max);
+    
+    for(i = 0; i<Aantal_rond_bocht; i++)
+    {
+      stepper_links.step(2);      //Het linker wiel moet een grotere afstand af leggen. gekozen voor 3x zo groot
+      stepper_rechts.step(1);
+    }
+  }
+
+  if(bocht == links)
+  {
+    //Bochten ++
+    stepper_links.setSpeed(Motor_speed_half);
+    stepper_rechts.setSpeed(Motor_speed_max);
+    for(i = 0; i<Aantal_rond_bocht; i++)
+    {
+    stepper_rechst.step(2);      //Het rechter wiel moet een grotere afstand af leggen. gekozen voor 3x zo groot
+    stepper_links.step(1);
+    }
+  }
 }
 
-void Volg_Modus_Functie()
+void Volg_Modus()
 {
-  
+  stepper_links.setSpeed(Motor_speed_follow);
+  stepper_rechts.setSpeed(Motor_speed_follow);
+  //if statements met versnellen van de motor/vertragen moeten hier komen
 }
-
 
 void loop() {
   switch(Stap) //Switchcase met states

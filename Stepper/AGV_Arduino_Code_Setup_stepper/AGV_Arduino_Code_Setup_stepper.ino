@@ -64,9 +64,9 @@ void setup()
   
   stepper_links.setSpeed(Motor_speed_stop);
   stepper_rechts.setSpeed(Motor_speed_stop);
-  }
+}
   
-  Actie_Proces_Gewas()
+void Actie_Proces_Gewas()
   {
     stepper_links.setSpeed(Motor_speed_stop);
     stepper_rechts.setSpeed(Motor_speed_stop);
@@ -76,13 +76,13 @@ void setup()
     digitalWrite(Signaal_Ledjes, LOW);
   }
   
-  Actie_Proces_Obstakel()
+void Actie_Proces_Obstakel()
   {
     stepper_links.setSpeed(Motor_speed_stop);
     stepper_rechts.setSpeed(Motor_speed_stop);
   }
   
-  Bocht(value voor bocht links of rechts)
+void Bocht(value voor bocht links of rechts)
   {
     //ToF sensoren uit
     if(bocht == rechts)                         //Bij een bocht naar links of rechts wordt de binnenste motor op 50% gezet
@@ -104,10 +104,21 @@ void setup()
   }
   
   
-  Volg_Modus()
+void Volg_Modus(waarden_ultrasoon)
   {
-  
-}
+  stepper_links.setSpeed(Motor_speed_follow);
+  stepper_rechts.setSpeed(Motor_speed_follow);
+  if(Waarden_ultrasoon>waarden_binnen_marge)
+  {
+    stepper_links.setSpeed(Motor_speed_follow-5);
+    stepper_rechts.setSpeed(Motor_speed_follow-5);
+  }
+  if(Waarden_ultrasoon>waarden_binnen_marge)
+  {
+    stepper_links.setSpeed(Motor_speed_follow+5);
+    stepper_rechts.setSpeed(Motor_speed_follow+5);
+  }
+  }
 
 
 void loop() {
