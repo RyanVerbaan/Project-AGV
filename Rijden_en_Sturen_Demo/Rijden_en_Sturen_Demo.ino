@@ -1,5 +1,9 @@
 #include <Stepper.h>
 
+
+
+// links: w b - rz z
+// rechst: z g - rd w
 //Aantal steps op de motor
 #define STEPS     200
 //Pinnen voor linker stepper
@@ -8,10 +12,10 @@
 #define Lpin_bin1  24
 #define Lpin_bin2  25
 //Pinnen voor retcher stepper
-#define Rpin_ain2  26
-#define Rpin_ain1  27
-#define Rpin_bin1  28
-#define Rpin_bin2  29
+#define Rpin_ain2  30
+#define Rpin_ain1  31
+#define Rpin_bin1  32
+#define Rpin_bin2  33
 
 #define Ultrasoon_Voor_Trigger 12
 #define Ultrasoon_Links_Trigger 6
@@ -26,55 +30,66 @@
 #define Bocht_Rechtsom 1
 #define Bocht_Linksom 2
 int stap = 0;
-int Distance = 0;
+float Distance = 0;
+int teller = 0;
 
 Stepper stepper_links(STEPS, Lpin_ain2, Lpin_ain1, Lpin_bin1, Lpin_bin2);
 Stepper stepper_rechts(STEPS, Rpin_ain2, Rpin_ain1, Rpin_bin1, Rpin_bin2);
 
-int Distance_Cal(int trigPin, int echoPin)
-{
-  float duration;
-  float distance;
-  float gem_distance;
-  float tot_distance = 0;
-  int i = 0;
-  for(i = 0; i < 10; i++)
-  {
-    digitalWrite(trigPin, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(trigPin, LOW);
-    duration = pulseIn(echoPin, HIGH);
-    distance = duration* 0.34/2; 
-    if(distance > 0)
-    {
-      tot_distance = tot_distance + distance;
-    }
-    else
-    {
-      i--;
-    }
-  }
-  gem_distance = tot_distance / i;
-  return gem_distance;
-}
+//int Distance_Cal(int trigPin, int echoPin)
+//{
+//  float duration = 0;
+//  float distance = 0;
+//  float gem_distance = 0;
+//  float tot_distance = 0;
+//  int i = 0;
+//  for (i = 0; i < 10; i++)
+//  {
+//    delayMicroseconds(2);
+//    digitalWrite(trigPin, LOW);
+//    digitalWrite(trigPin, HIGH);
+//    delayMicroseconds(10);
+//    digitalWrite(trigPin, LOW);
+//    duration = pulseIn(echoPin, HIGH);
+//    distance = duration * 0.34 / 2;
+//    Serial.print("distance: ");
+//    Serial.println(distance);
+//    if (distance > 0)
+//    {
+//      tot_distance += distance;
+//    }
+//    else
+//    {
+//      i--;
+//      //      Serial.print("Else statement distance_Cal");
+//      //      Serial.println(tot_distance);
+//      //      delay(500);
+//    }
+//    //  delay(50);
+//  }
+//  gem_distance = tot_distance / i;
+//  return gem_distance;
+//}
 
 //Deze functie is voor als de bovengeschreven functie te langzaam is
-//int Distance_Cal(int trigPin, int echoPin) 
-//{
-//  float duration;
-//  float distance;
-//  digitalWrite(trigPin, HIGH);
-//  delayMicroseconds(10);
-//  digitalWrite(trigPin, LOW);
-//  duration = pulseIn(echoPin, HIGH);
-//  distance = duration* 34/2;
-//  return distance;
-//}
+float Distance_Cal(int trigPin, int echoPin)
+{
+  long duration;
+  long distance;
+  digitalWrite(echoPin, LOW);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.34/2;
+  digitalWrite(trigPin, LOW);
+  return distance;
+}
 
 void setup()
 {
-  Serial.begin(9600);
-  Serial.println("Stepper test!");
+//  Serial.begin(9600);
+//  Serial.println("Stepper test!");
   stepper_links.setSpeed(120);
   stepper_rechts.setSpeed(120);
 
@@ -88,35 +103,74 @@ void setup()
   digitalWrite(Ultrasoon_Voor_Trigger, LOW);
   digitalWrite(Ultrasoon_Links_Trigger, LOW);
   digitalWrite(Ultrasoon_Rechts_Trigger, LOW);
+  delay(5000);
 }
 
 void loop()
 {
-  switch(stap)
+  teller++;
+//  Serial.print("stap: "); Serial.println(stap);
+  switch (stap)
   {
-     case (Rijden):
-        stepper_links.step(1);
-        stepper_rechts.step(1);
+    case (Rijden):
+      stepper_links.step(1);
+      stepper_rechts.step(1);
+      if(teller > 20)
+      {
         Distance = Distance_Cal(Ultrasoon_Links_Trigger, Ultrasoon_Links_Echo);
-        if(Distance < 80);
-          stap = Bocht_Linksom;
+      }
+      
+//      Serial.print("distance links: ");
+//      Serial.println(Distance);
+      if (Distance < 80)
+      {
+        stap = Bocht_Linksom; 
+      }
+      if(teller > 20)
+      {
         Distance = Distance_Cal(Ultrasoon_Rechts_Trigger, Ultrasoon_Rechts_Echo);
-        if(Distance < 80);
-          stap = Bocht_Rechtsom;
+      } 
+      if(teller > 20)
+      {
+        teller = 0;
+      } 
+      
+//      Serial.print("distance rechts: ");
+//      Serial.println(Distance);
+      if(Distance < 80)
+      {
+        stap = Bocht_Rechtsom;
+      }  
       break;
     case (Bocht_Rechtsom):
-      stepper_links.step(2);
+      stepper_links.step(3);
       stepper_rechts.step(1);
-      Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);
-      if(Distance < 80);
+      if(teller > 10)
+      {
+        Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);
+        teller = 0;
+      } 
+//      Serial.print("distance voor rechtsom: ");
+//      Serial.println(Distance);
+      if (Distance < 80)
+      {
         stap = Rijden;
+      }
       break;
     case (Bocht_Linksom):
       stepper_links.step(1);
-      stepper_rechts.step(2);
-      Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);
-      if(Distance < 80);
+      stepper_rechts.step(3);
+      if(teller > 10)
+      {
+        Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);
+        teller = 0;
+      } 
+//      Serial.print("distance voor linksom: ");
+//      Serial.println(Distance);
+      if (Distance < 80)
+      {
         stap = Rijden;
-      break; 
+      }
+      break;
   }
 }

@@ -1,5 +1,12 @@
+//https://www.arduino.cc/en/Reference/Wire
+//https://learn.adafruit.com/adafruit-vl6180x-time-of-flight-micro-lidar-distance-sensor-breakout/wiring-and-test
+
 #include <Wire.h>
 #include "Adafruit_VL6180X.h"
+
+#define links 10
+#define rechts 11
+uint8_t teller = 0;
 
 Adafruit_VL6180X vl = Adafruit_VL6180X();
 
@@ -17,27 +24,37 @@ float ToF_meting(){
   }//for
   
   gemiddelde = totale_waarde/10;
-  return (gemiddelde-5.5)/11;//pas hier de gevonden functie toe uit de proef
+  return (1.09395*(gemiddelde-5.5)/11+1.399406);//pas hier de gevonden functie toe uit de proef
 }//ToF_meting
 
 void setup() {
   Serial.begin(115200);
-  // wait for serial port to open on native usb devices
-  while (!Serial) {
-    delay(1);
-  }
+  pinMode(links, OUTPUT);
+  pinMode(rechts, OUTPUT);
+  digitalWrite(rechts, HIGH);
+  digitalWrite(links, LOW);
 }//setup
 
 void loop() {
   //De variabele cm_tot_rand_boomgaard is hier toegevoegd omdat anders de functie 
   //ToF_meting() twee keer wordt aangeroepen en daarmee dus een verschillende meting wordt bekeken
+  teller++;
+  if(teller % 200 < 100){
+    digitalWrite(rechts, HIGH);
+    digitalWrite(links, LOW);
+    Serial.print("R ");
+  } else{
+    digitalWrite(rechts, LOW);
+    digitalWrite(links, HIGH);
+    Serial.print("L ");
+  }
   float cm_tot_rand_boomgaard = ToF_meting();
-  Serial.print("afstand [cm]: "); 
+  Serial.print(teller);
+  Serial.print(" afstand [cm]: "); 
   if(cm_tot_rand_boomgaard == 0){
      Serial.println("GEEN METING"); 
   }
   else{
     Serial.println(cm_tot_rand_boomgaard);
   }
-  delay(10);
 }//loop
