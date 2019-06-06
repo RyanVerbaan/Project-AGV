@@ -1,21 +1,20 @@
 #include <Stepper.h>
 
 
-
 // links: w b - rz z
 // rechst: z g - rd w
 //Aantal steps op de motor
 #define STEPS     200
-//Pinnen voor linker stepper
-#define Lpin_ain2  22
-#define Lpin_ain1  23
-#define Lpin_bin1  24
-#define Lpin_bin2  25
+//Pinnen voor linker stepper  //Mogen digitale pinnen zijn
+#define Lpin_ain2  28
+#define Lpin_ain1  29
+#define Lpin_bin1  30
+#define Lpin_bin2  31
 //Pinnen voor retcher stepper
-#define Rpin_ain2  30
-#define Rpin_ain1  31
-#define Rpin_bin1  32
-#define Rpin_bin2  33
+#define Rpin_ain2  36
+#define Rpin_ain1  37
+#define Rpin_bin1  38
+#define Rpin_bin2  39
 
 #define Ultrasoon_Voor_Trigger 12
 #define Ultrasoon_Links_Trigger 6
@@ -80,7 +79,7 @@ float Distance_Cal(int trigPin, int echoPin)
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
-  duration = pulseIn(echoPin, HIGH);
+  duration = pulseIn(echoPin, HIGH, 3000);
   distance = duration * 0.34/2;
   digitalWrite(trigPin, LOW);
   return distance;
@@ -120,8 +119,8 @@ void loop()
         Distance = Distance_Cal(Ultrasoon_Links_Trigger, Ultrasoon_Links_Echo);
       }
       
-//      Serial.print("distance links: ");
-//      Serial.println(Distance);
+      Serial.print("distance links: ");
+      Serial.println(Distance);
       if (Distance < 80)
       {
         stap = Bocht_Linksom; 
@@ -135,8 +134,6 @@ void loop()
         teller = 0;
       } 
       
-//      Serial.print("distance rechts: ");
-//      Serial.println(Distance);
       if(Distance < 80)
       {
         stap = Bocht_Rechtsom;
@@ -150,8 +147,6 @@ void loop()
         Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);
         teller = 0;
       } 
-//      Serial.print("distance voor rechtsom: ");
-//      Serial.println(Distance);
       if (Distance < 80)
       {
         stap = Rijden;
@@ -165,8 +160,6 @@ void loop()
         Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);
         teller = 0;
       } 
-//      Serial.print("distance voor linksom: ");
-//      Serial.println(Distance);
       if (Distance < 80)
       {
         stap = Rijden;
