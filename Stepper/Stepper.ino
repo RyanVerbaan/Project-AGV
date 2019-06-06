@@ -1,6 +1,9 @@
 #include <Stepper.h>
 
 //Defines voor stepper motor(A_Mega)
+
+// links: w b - rz z
+// rechst: z g - rb w
 //Aantal steps op de motor
 #define STEPS     200
 //Pinnen voor linker stepper  //Mogen digitale pinnen zijn
@@ -9,10 +12,10 @@
 #define Pin_Links_Bin1  24
 #define Pin_Links_Bin2  25
 //Pinnen voor retcher stepper
-#define Pin_Rechts_Ain2  28
-#define Pin_Rechts_Ain1  29
-#define Pin_Rechts_Bin1  30
-#define Pin_Rechts_Bin2  31
+#define Pin_Rechts_Ain2  30
+#define Pin_Rechts_Ain1  31
+#define Pin_Rechts_Bin1  32
+#define Pin_Rechts_Bin2  33
 
 #define Motor_speed_max     120                 //100rpm is max reacheble speed op 5V
 #define Motor_speed_follow  (Motor_speed_max/7) //70% speed for following person
@@ -34,16 +37,18 @@ void setup()
 {
 
   Serial.begin(9600);
-  Serial.println("Stepper test!")
+  Serial.println("Stepper test!");
   stepper_links.setSpeed(120);
   stepper_rechts.setSpeed(120);
+  Serial.println("Stepper test klaar!");
+  delay(5000);
 
 }
 
 void loop()
 {
 
-  stepper_links.step(1);
+  stepper_links.step(2);
   stepper_rechts.step(1);
   
 }
