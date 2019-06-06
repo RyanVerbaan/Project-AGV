@@ -1,21 +1,8 @@
 #include <Stepper.h>
+#include <Wire.h>
+#include <VL6180X.h>
 
-//Aantal steps op de motor
-#define STEPS     200
-//Pinnen voor linker stepper  //Mogen digitale pinnen zijn
-#define Lpin_ain2  28
-#define Lpin_ain1  29
-#define Lpin_bin1  30
-#define Lpin_bin2  31
-//Pinnen voor retcher stepper
-#define Rpin_ain2  36
-#define Rpin_ain1  37
-#define Rpin_bin1  38
-#define Rpin_bin2  39
-
-#define Motor_Speed_Max       120                 
-#define Motor_Speed_Stop      0         
-
+//Stap Defines
 #define Volg_Modus            -1
 #define Idle                  0
 #define Rijden                1
@@ -26,6 +13,46 @@
 #define Volgmodus             -1
 #define Autonoom              1
 
+//Pin Defines
+//Pinnen voor linker stepper
+#define Lpin_ain2  28
+#define Lpin_ain1  29
+#define Lpin_bin1  30
+#define Lpin_bin2  31
+//Pinnen voor retcher stepper
+#define Rpin_ain2  36
+#define Rpin_ain1  37
+#define Rpin_bin1  38
+#define Rpin_bin2  39
+//Ultrasoon Pinnen Trigger
+#define Ultrasoon_Voor_Trigger          12
+#define Ultrasoon_Links_Voor_Trigger    10
+#define Ultrasoon_Rechts_Voor_Trigger   8
+#define Ultrasoon_Links_Achter_Trigger  6
+#define Ultrasoon_Rechts_Achter_Trigger 4
+//Ultrasoon Pinnen Echo
+#define Ultrasoon_Voor_Echo             11
+#define Ultrasoon_Links_Voor_Echo       9
+#define Ultrasoon_Rechts_Voor_Echo      7
+#define Ultrasoon_Links_Achter_Echo     5
+#define Ultrasoon_Rechts_Achter_Echo    3
+//Overige Pinnen
+#define SDA_Pin                         20
+#define SCL_Pin                         21
+#define Shut_ToF_Rechts                 11
+#define Shut_ToF_Links                  10
+#define Signaal_Ledjes                  23
+
+//Time of Flight Adressen
+#define address0 0x20
+#define address1 0x22
+
+//Constanten Defines en Variabelen
+#define STEPS     200
+#define Motor_Speed_Max       120                 
+#define Motor_Speed_Stop      0    
+
+#define RANGE 1
 int Koers = 0;
 #define Rechts_Afslaan        1
 #define Links_Afslaan         -1
@@ -35,33 +62,9 @@ int Koers = 0;
 #define Gewas_Afstand         50    //afstand van de gewassen tot de agv (misschien iets meer)
 #define Koers_Value           10    //afstand van de rand van de gewassen tot agv
 #define Koers_Marge           10    //hoeveelheid speelruimte van de koers van de agv
-
-#define Ultrasoon_Voor_Trigger          12
-#define Ultrasoon_Links_Voor_Trigger    10
-#define Ultrasoon_Rechts_Voor_Trigger   8
-#define Ultrasoon_Links_Achter_Trigger  6
-#define Ultrasoon_Rechts_Achter_Trigger 4
-
-#define Ultrasoon_Voor_Echo             11
-#define Ultrasoon_Links_Voor_Echo       9
-#define Ultrasoon_Rechts_Voor_Echo      7
-#define Ultrasoon_Links_Achter_Echo     5
-#define Ultrasoon_Rechts_Achter_Echo    3
-
-#define Time_Of_Flight_Links            20
-#define Time_Of_Flight_Rechts           22
-#define Signaal_Ledjes                  23
-
-#define Obstakel_Boom                   0
-#define Obstakel_Persoon                1
-#define Obstakel_Bocht_Rechts           2
-#define Obstakel_Bocht_Links            3
-
-#define Bocht_Links                     0
-#define Bocht_Rechts                    1
-
-Stepper Stepper_Links(STEPS, Lpin_ain2, Lpin_ain1, Lpin_bin1, Lpin_bin2);
-Stepper Stepper_Rechts(STEPS, Rpin_ain2, Rpin_ain1, Rpin_bin1, Rpin_bin2);
+#define Bocht                 0
+#define Linksom               -1
+#define Rechtsom              1
 
 void Actie_Proces_Gewas_Functie();
 void Actie_Proces_Obstakel_Functie();
@@ -77,6 +80,19 @@ int Obstakel_Waarde = 0;
 
 void setup() 
 {
+  Wire.begin();
+  Serial.begin();
+  
+  //Stepper Settings
+  Stepper Stepper_Links(STEPS, Lpin_ain2, Lpin_ain1, Lpin_bin1, Lpin_bin2);
+  Stepper Stepper_Rechts(STEPS, Rpin_ain2, Rpin_ain1, Rpin_bin1, Rpin_bin2);
+
+  //ToF Instance
+  VL6180X ToF_Rechts;
+  VL6180X ToF_Links;
+
+
+  //pinModes Ultrasoon
   pinMode(Ultrasoon_Voor_Trigger, OUTPUT);
   pinMode(Ultrasoon_Voor_Echo, INPUT);
   pinMode(Ultrasoon_Links_Voor_Trigger, OUTPUT);
@@ -87,17 +103,50 @@ void setup()
   pinMode(Ultrasoon_Links_Achter_Echo, INPUT);
   pinMode(Ultrasoon_Rechts_Achter_Trigger, OUTPUT);
   pinMode(Ultrasoon_Rechts_Achter_Echo, INPUT);
+  //Pinmodes Time of Flight
+  pinMode(Time_Of_Flight_Links, INPUT);
+  pinMode(Time_Of_Flight_Rechts, INPUT);
+  //Overige Pinmodes
+  pinMode(Signaal_Ledjes, OUTPUT);
+  pinMode(Shut_ToF_Rechts,OUTPUT);
+  pinMode(Shut_ToF_Links,OUTPUT);
 
+  //Digital Writes
   digitalWrite(Ultrasoon_Voor_Trigger, LOW);
   digitalWrite(Ultrasoon_Links_Voor_Trigger, LOW);
   digitalWrite(Ultrasoon_Rechts_Voor_Trigger, LOW);
   digitalWrite(Ultrasoon_Links_Achter_Trigger, LOW);
   digitalWrite(Ultrasoon_Rechts_Achter_Trigger, LOW);
 
-  pinMode(Time_Of_Flight_Links, INPUT);//AANPASSEN? ToF links en rechts op zelfde pin met switches die omschakelen na het geheel uitvoeren van een bochtfunctie
-  pinMode(Time_Of_Flight_Rechts, INPUT);
+  // ToF Rechts
+  digitalWrite(enablePin0, HIGH);
+  delay(50);
+  ToF_Rechts.init();
+  ToF_Rechts.configureDefault();
+  ToF_Rechts.setAddress(address0);
+  ToF_Rechts.writeReg(VL6180X::SYSRANGE__MAX_CONVERGENCE_TIME, 30);
+  ToF_Rechts.writeReg16Bit(VL6180X::SYSALS__INTEGRATION_PERIOD, 50);
+  ToF_Rechts.setTimeout(500);
+  ToF_Rechts.stopContinuous();
+  ToF_Rechts.setScaling(RANGE); // configure range or precision 1, 2 oder 3 mm
+  delay(300);
+  ToF_Rechts.startInterleavedContinuous(100);
+  delay(100);
 
-  pinMode(Signaal_Ledjes, OUTPUT);
+  // ToF Links
+  digitalWrite(enablePin1, HIGH);
+  delay(50);
+  ToF_Links.init();
+  ToF_Links.configureDefault();
+  ToF_Links.setAddress(address1);
+  ToF_Links.writeReg(VL6180X::SYSRANGE__MAX_CONVERGENCE_TIME, 30);
+  ToF_Links.writeReg16Bit(VL6180X::SYSALS__INTEGRATION_PERIOD, 50);
+  ToF_Links.setTimeout(500);
+  ToF_Links.stopContinuous();
+  ToF_Links.setScaling(RANGE);
+  delay(300);
+  ToF_Links.startInterleavedContinuous(100);
+  delay(100);
 }
 
 
@@ -124,12 +173,12 @@ void loop()
       
     case (Actie_Proces_Obstakel):
       //Gepaste Afstand houden --> Stilstaan of langzamer gaan rijden.
-      Actie_Proces_Koers_Functie(Obstakel_Waarde);
+      Actie_Proces_Obstakel_Functie();
       break; 
           
     case (Actie_Proces_Koers):
       //Bijsturen en Bochtnemen
-      Actie_Proces_Koers_Functie(Obstakel_Waarde);
+      Actie_Proces_Koers_Functie();
       break;
       
     case (Volg_Modus):
@@ -176,16 +225,19 @@ void loop()
         Obstakel_Waarde = Obstakel_Boom;
         Stap = Actie_Proces_Gewas; 
       }
-      if(digitalRead(Time_Of_Flight_Links) > Koers_Value + Koers_Marge || digitalRead(Time_Of_Flight_Rechts) < Koers_Value - Koers_Marge)
+      if(ToF_Rechts.readRangeContinuousMillimeters()) > Koers_Value + Koers_Marge || ToF_Rechts.readRangeContinuousMillimeters() < Koers_Value - Koers_Marge)
       {
-        if(Bocht == Bocht_Links)
-        {
-          Obstakel_Waarde = Obstakel_Bocht_Links;
-        }
-        if(Bocht == Bocht_Rechts)
-        {
-          Obstakel_Waarde = Obstakel_Bocht_Rechts;
-        }
+        Bocht = Linksom
+        Stap = Actie_Proces_Koers;
+      }
+      if(ToF_Rechts.readRangeContinuousMillimeters()) > Koers_Value + Koers_Marge)
+      {
+        Bocht = Rechtsom;
+        Stap = Actie_Proces_Koers;
+      }
+      if(ToF_Links.readRangeContinuousMillimeters()) > Koers_Value + Koers_Marge)
+      {
+        Bocht = Linksom;
         Stap = Actie_Proces_Koers;
       }
       break;
@@ -234,10 +286,6 @@ void Actie_Proces_Koers_Functie(int Obstakel)
 {
     switch(Obstakel)
     {
-      case(Obstakel_Boom):
-        Stepper_Links.setSpeed(Motor_Speed_Stop);
-        Stepper_Rechts.setSpeed(Motor_Speed_Stop);
-        break;
       case(Obstakel_Bocht_Rechts):
         for(int i = 0; i < 5; i++)  // klein stukkie voor uit
         {
