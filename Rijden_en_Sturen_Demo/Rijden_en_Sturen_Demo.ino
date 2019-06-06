@@ -139,6 +139,7 @@ void loop()
         stap = Bocht_Rechtsom;
       }  
       break;
+      
     case (Bocht_Rechtsom):
       stepper_links.step(3);
       stepper_rechts.step(1);
@@ -152,6 +153,7 @@ void loop()
         stap = Rijden;
       }
       break;
+      
     case (Bocht_Linksom):
       stepper_links.step(1);
       stepper_rechts.step(3);
