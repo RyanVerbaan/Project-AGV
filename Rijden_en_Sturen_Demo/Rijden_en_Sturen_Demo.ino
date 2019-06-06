@@ -104,6 +104,7 @@ void loop()
         if(Distance < 80);
           stap = Bocht_Rechtsom;
       break;
+      
     case (Bocht_Rechtsom):
       stepper_links.step(2);
       stepper_rechts.step(1);
@@ -111,6 +112,7 @@ void loop()
       if(Distance < 80);
         stap = Rijden;
       break;
+      
     case (Bocht_Linksom):
       stepper_links.step(1);
       stepper_rechts.step(2);
