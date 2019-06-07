@@ -280,9 +280,9 @@ void Actie_Proces_Obstakel_Functie()
   Stepper_Rechts.setSpeed(Motor_Speed_Stop);
 }
 
-void Actie_Proces_Koers_Functie(int Obstakel)
+void Actie_Proces_Koers_Functie(int Bocht)
 {
-    switch(Obstakel)
+    switch(Bocht)
     {
       case(Obstakel_Bocht_Rechts):
         for(int i = 0; i < 5; i++)  // klein stukkie voor uit
