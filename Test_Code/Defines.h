@@ -33,8 +33,6 @@ Dit is de define file waar alle defines voor de main code instaan.
 #define  Ultrasoon_Links_Achter_Echo     5
 #define  Ultrasoon_Rechts_Achter_Echo    3
 
-#define  Time_Of_Flight_Links            20
-#define  Time_Of_Flight_Rechts           22
 #define  Signaal_Ledjes                  23
 #define  Volgmodus_Autonoom_Knop         46      //Define hier de pin voor de autonome knop
 

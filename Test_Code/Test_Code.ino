@@ -45,9 +45,7 @@ void setup()
   pinMode(Ultrasoon_Links_Achter_Echo, INPUT);
   pinMode(Ultrasoon_Rechts_Achter_Trigger, OUTPUT);
   pinMode(Ultrasoon_Rechts_Achter_Echo, INPUT);
-  //Pinmodes Time of Flight
-  pinMode(Time_Of_Flight_Links, INPUT);
-  pinMode(Time_Of_Flight_Rechts, INPUT);
+
   //Overige Pinmodes
   pinMode(Signaal_Ledjes, OUTPUT);
   pinMode(Shut_ToF_Rechts,OUTPUT);
@@ -102,34 +100,34 @@ void loop()
   {
     case (Idle): 
       //Motoren worden stilgezet en wachten op een volgende activiteit
-        Stepper_Links.setSpeed(Motor_Speed_Stop);
-        Stepper_Rechts.setSpeed(Motor_Speed_Stop);
-        Serial.println("Idle State");
+      Serial.println("Idle State");
+      Stepper_Rechts.step(0);
+      Stepper_Links.step(0);
       break;
       
     case (Rijden):
       //Default state de steppers rijden vooruit
-      Stepper_Links.setSpeed(Motor_Speed_Max);
-      Stepper_Rechts.setSpeed(Motor_Speed_Max);
       Serial.println("Rijden State");
+      Stepper_Rechts.step(2);
+      Stepper_Links.step(2);
       break;
       
     case (Actie_Proces_Gewas):
       //Stappenmotoren stilzetten en signaal afgeven
-      Actie_Proces_Gewas_Functie();
       Serial.println("Gewas State");
+      Actie_Proces_Gewas_Functie();
       break;
       
     case (Actie_Proces_Obstakel):
       //Hier worden bomen gedetecteerd aan de zijkant met de ultrasone sensoren
-      Actie_Proces_Obstakel_Functie();
       Serial.println("Obstakel State");
+      Actie_Proces_Obstakel_Functie();
       break; 
           
     case (Actie_Proces_Koers):
       //Bijsturen en Bochtnemen
-      Actie_Proces_Koers_Functie(Bocht);
       Serial.println("Koers State");
+      Actie_Proces_Koers_Functie(Bocht);
       break;
       
     case (Volg_Modus):
@@ -157,8 +155,6 @@ void loop()
       break;
       
     case (Rijden):
-//      Stepper_Links.step(1);
-//      Stepper_Rechts.step(1);
       Serial.println("Rijden Overgang");
       if(digitalRead(Volgmodus_Autonoom_Knop) == HIGH)
       {
@@ -166,36 +162,36 @@ void loop()
       }
       
       Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);                   //Ultrasoon voor kijken
+      Serial.println(Distance);
       if(Distance < Arm_Lengte && Distance > 0)
       {
-         Serial.println(Distance);
          Stap = Actie_Proces_Obstakel;
       }
       
       Distance = Distance_Cal(Ultrasoon_Links_Achter_Trigger, Ultrasoon_Links_Achter_Echo);   //Ultrasoon Links kijken
+      Serial.println(Distance);
       if(Distance < Gewas_Afstand && Distance > 0)
       {
-        Serial.println(Distance);
         Stap = Actie_Proces_Gewas;
       }
       
       Distance = Distance_Cal(Ultrasoon_Rechts_Achter_Trigger, Ultrasoon_Rechts_Achter_Echo); //Ultrasoon Rechts kijken
+      Serial.println(Distance);
       if(Distance < Gewas_Afstand && Distance > 0)
       {
-        Serial.println(Distance);
         Stap = Actie_Proces_Gewas; 
       }
-      
+
+      //Serial.println(ToF_Rechts.readRangeContinuousMillimeters());
       if(ToF_Rechts.readRangeContinuousMillimeters() > Koers_Value + Koers_Marge)
       {
-        Serial.println(ToF_Rechts.readRangeContinuousMillimeters());
         Bocht = Rechtsom;
         Stap = Actie_Proces_Koers;
       }
-      
+
+      //Serial.println(ToF_Links.readRangeContinuousMillimeters());
       if(ToF_Links.readRangeContinuousMillimeters() > Koers_Value + Koers_Marge)
       {
-        Serial.println(ToF_Links.readRangeContinuousMillimeters());
         Bocht = Linksom;
         Stap = Actie_Proces_Koers;
       }
@@ -217,21 +213,19 @@ void loop()
      
     case (Actie_Proces_Koers):
       Serial.println("Koers Overgang");
+      Serial.println(ToF_Rechts.readRangeContinuousMillimeters());
       if((ToF_Rechts.readRangeContinuousMillimeters() > Koers_Value - Koers_Marge) && ((ToF_Rechts.readRangeContinuousMillimeters() < Koers_Value + Koers_Marge))) //valt Binnen de Marges van de koers
-        {
-        Serial.println("naar stap rijden");
+      {
         Stap = Rijden;
-        } 
+      } 
+      Serial.println(ToF_Links.readRangeContinuousMillimeters());
       if((ToF_Links.readRangeContinuousMillimeters() > Koers_Value - Koers_Marge) && ((ToF_Links.readRangeContinuousMillimeters() < Koers_Value + Koers_Marge))) //valt Binnen de Marges van de koers
-        {
-        Serial.println("naar stap rijden");
+      {
         Stap = Rijden;
-        } 
+      } 
       break;     
     case (Volg_Modus):
       Serial.println("Volg Overgang");
-      Stepper_Links.step(1);
-      Stepper_Rechts.step(1);
       if(digitalRead(Volgmodus_Autonoom_Knop) == LOW)
       {
         Stap = Idle;
@@ -379,14 +373,14 @@ void Actie_Proces_Koers_Functie(int Bocht)
 
 void Actie_Proces_Obstakel_Functie()
 {
-  Stepper_Links.setSpeed(Motor_Speed_Stop);
-  Stepper_Rechts.setSpeed(Motor_Speed_Stop);
+  Stepper_Links.step(0);
+  Stepper_Rechts.step(0);
 }
 
 void Actie_Proces_Gewas_Functie()
 {
-  Stepper_Links.setSpeed(Motor_Speed_Stop);
-  Stepper_Rechts.setSpeed(Motor_Speed_Stop);
+  Stepper_Links.step(Motor_Speed_Stop);
+  Stepper_Rechts.step(Motor_Speed_Stop);
   delay(500);
   digitalWrite(Signaal_Ledjes, HIGH);
   delay(500);
@@ -397,14 +391,14 @@ void Volg_Modus_Functie()
 {
   
   Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);
-  if(Distance < (Arm_Lengte*0.8))
+  if(Distance > Arm_Lengte)
     {
-      Stepper_Links.setSpeed(Motor_Speed_Follow-20);
-      Stepper_Rechts.setSpeed(Motor_Speed_Follow-20);
+      Stepper_Links.step(1);
+      Stepper_Rechts.step(1);
     }
-  if(Distance > (Arm_Lengte*1.2))
+  if(Distance < Arm_Lengte)
   {
-    Stepper_Links.setSpeed(Motor_Speed_Follow+20);
-      Stepper_Rechts.setSpeed(Motor_Speed_Follow+20);
+      Stepper_Links.step(0);
+      Stepper_Rechts.step(0);
   }
 }

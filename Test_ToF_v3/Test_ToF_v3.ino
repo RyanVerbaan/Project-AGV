@@ -34,8 +34,8 @@ hard-coded address of the module.
 // #define address1 0x32
 
 /* These Arduino pins must be wired to the IO0 pin of VL6180x */
-int enablePin0 = 11;
-int enablePin1 = 10;
+int enablePin0 = 50;
+int enablePin1 = 51;
 //int enablePin2 = 9;
 //int enablePin3 = 8;
 //int enablePin4 = 7;
