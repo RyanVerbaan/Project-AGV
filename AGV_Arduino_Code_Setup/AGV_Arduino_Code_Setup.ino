@@ -62,7 +62,6 @@ int Koers = 0;
 #define Gewas_Afstand         50    //afstand van de gewassen tot de agv (misschien iets meer)
 #define Koers_Value           10    //afstand van de rand van de gewassen tot agv
 #define Koers_Marge           10    //hoeveelheid speelruimte van de koers van de agv
-#define Bocht                 0
 #define Linksom               -1
 #define Rechtsom              1
 
@@ -72,7 +71,7 @@ void Volg_Modus_Functie();
 void Actie_Proces_Koers_Functie(int Obstakel);
 int Distance_Cal(int trigPin, int echoPin);
 
-int Bocht = Bocht_Links;
+int Bocht = 0;
 int Stap = 0;
 int Status = 0;
 float Distance = 0;
@@ -81,16 +80,15 @@ int Obstakel_Waarde = 0;
 void setup() 
 {
   Wire.begin();
-  Serial.begin();
-  
-  //Stepper Settings
-  Stepper Stepper_Links(STEPS, Lpin_ain2, Lpin_ain1, Lpin_bin1, Lpin_bin2);
-  Stepper Stepper_Rechts(STEPS, Rpin_ain2, Rpin_ain1, Rpin_bin1, Rpin_bin2);
+  Serial.begin(9600);
 
   //ToF Instance
   VL6180X ToF_Rechts;
   VL6180X ToF_Links;
-
+  
+  //Stepper Settings
+  Stepper Stepper_Links(STEPS, Lpin_ain2, Lpin_ain1, Lpin_bin1, Lpin_bin2);
+  Stepper Stepper_Rechts(STEPS, Rpin_ain2, Rpin_ain1, Rpin_bin1, Rpin_bin2);
 
   //pinModes Ultrasoon
   pinMode(Ultrasoon_Voor_Trigger, OUTPUT);
@@ -104,8 +102,8 @@ void setup()
   pinMode(Ultrasoon_Rechts_Achter_Trigger, OUTPUT);
   pinMode(Ultrasoon_Rechts_Achter_Echo, INPUT);
   //Pinmodes Time of Flight
-  pinMode(Time_Of_Flight_Links, INPUT);
-  pinMode(Time_Of_Flight_Rechts, INPUT);
+  pinMode(SDA_Pin, INPUT);
+  pinMode(SCL_Pin, INPUT);
   //Overige Pinmodes
   pinMode(Signaal_Ledjes, OUTPUT);
   pinMode(Shut_ToF_Rechts,OUTPUT);
@@ -119,7 +117,7 @@ void setup()
   digitalWrite(Ultrasoon_Rechts_Achter_Trigger, LOW);
 
   // ToF Rechts
-  digitalWrite(enablePin0, HIGH);
+  digitalWrite(Shut_ToF_Rechts, HIGH);
   delay(50);
   ToF_Rechts.init();
   ToF_Rechts.configureDefault();
@@ -134,7 +132,7 @@ void setup()
   delay(100);
 
   // ToF Links
-  digitalWrite(enablePin1, HIGH);
+  digitalWrite(Shut_ToF_Links, HIGH);
   delay(50);
   ToF_Links.init();
   ToF_Links.configureDefault();
@@ -255,9 +253,9 @@ void loop()
       break;     
      
     case (Actie_Proces_Koers):
-      if(digitalRead(Time_Of_Flight_Links) > Koers_Value - Koers_Marge && digitalRead(Time_Of_Flight_Links) < Koers_Value + Koers_Marge); //valt Binnen de Marges van de koers
+      if(ToF_Links.readRangeContinuousMillimeters() > Koers_Value - Koers_Marge && ToF_Links.readRangeContinuousMillimeters() < Koers_Value + Koers_Marge); //valt Binnen de Marges van de koers
         Stap = Rijden; 
-      if(digitalRead(Time_Of_Flight_Rechts) > Koers_Value - Koers_Marge && digitalRead(Time_Of_Flight_Rechts) < Koers_Value + Koers_Marge); //valt Binnen de Marges van de koers
+      if(ToF_Rechts.readRangeContinuousMillimeters() > Koers_Value - Koers_Marge && ToF_Rechts.readRangeContinuousMillimeters() < Koers_Value + Koers_Marge); //valt Binnen de Marges van de koers
         Stap = Rijden; 
       break;     
     case (Volg_Modus):
