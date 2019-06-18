@@ -7,7 +7,7 @@ int Stap = 0;
 float Distance = 0;
 int Koers = 0;
 int Bocht = -1;
-int Bochten_Patroon[] = [Linksom, Rechtsom, Linksom, Linksom, Rechtsom, Linksom];
+int Bochten_Patroon[] = [Links_om, Rechtsom, Links_om, Links_om, Rechtsom, Links_om];
 
 Stepper Stepper_Links(STEPS, Pin_Links_Ain2, Pin_Links_Ain1, Pin_Links_Bin1, Pin_Links_Bin2);
 Stepper Stepper_Rechts(STEPS, Pin_Rechts_Ain2, Pin_Rechts_Ain1, Pin_Rechts_Bin1, Pin_Rechts_Bin2);
@@ -20,6 +20,7 @@ void Bocht_rechtsom();
 void setup()
 {
   Serial.begin(9600);
+  Init();
 }
 
 void loop()
@@ -29,18 +30,28 @@ void loop()
     case (Volgmodus):
       break;
     case (Idle):
-      Stepper_Links.step(0);
-      Stepper_Rechts.step(0);
+      digitalWrite(Standby_Pin_Links, LOW);
+      digitalWrite(Standby_Pin_Rechts, LOW);
       break;
     case (Rijden):
+      digitalWrite(Standby_Pin_Rechts, HIGH);
+      digitalWrite(Standby_Pin_Links, HIGH);
       Stepper_Links.step(1);
       Stepper_Rechts.step(1);
       break;
     case (Actie_Proces_Gewas):
-      Stepper_Links.step(0);
-      Stepper_Rechts.step(0);
+      digitalWrite(Standby_Pin_Links, LOW);
+      digitalWrite(Standby_Pin_Rechts, LOW);
       digitalWrite(LedPins, HIGH);
-      delay(2000);
+      delay(100);
+      digitalWrite(LedPins, LOW);
+      delay(100);
+      digitalWrite(LedPins, HIGH);
+      delay(100);
+      digitalWrite(LedPins, LOW);
+      delay(100);
+      digitalWrite(LedPins, HIGH);
+      delay(100);
       digitalWrite(LedPins, LOW);
       break;
     case (Actie_Proces_Object):
@@ -116,7 +127,7 @@ void loop()
       break;
       
     case (Actie_Proces_Koers): //----------------------------------------------------------------
-      if(Bochten_Patroon[Bocht] == Linksom)
+      if(Bochten_Patroon[Bocht] == Links_om)
       {
         Bocht_linksom(); 
       }
@@ -155,9 +166,6 @@ void Bocht_linksom()
    Stepper_Rechts.step(1); 
   }
 }
-
-
-
 
 
 void Init()

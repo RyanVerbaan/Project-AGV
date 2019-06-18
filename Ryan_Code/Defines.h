@@ -36,8 +36,11 @@ Dit is de define file waar alle defines voor de main code instaan.
 //Pinnen voor retcher stepper
 #define  Pin_Rechts_Ain2 40 
 #define  Pin_Rechts_Ain1 41
-#define  Pin_Rechts_Bin1 42
-#define  Pin_Rechts_Bin2 43
+#define  Pin_Rechts_Bin1 44
+#define  Pin_Rechts_Bin2 45
+
+#define  Standby_Pin_Links 28
+#define  Standby_Pin_Rechts 29
 
 //Constanten Defines en Variabelen
 #define STEPS                 200
@@ -52,6 +55,6 @@ Dit is de define file waar alle defines voor de main code instaan.
 #define Koers_Value           70    //afstand van de rand van de gewassen tot agv
 #define Koers_Marge           10    //hoeveelheid speelruimte van de koers van de agv
 
-//#define Botch
-#define Links_om               2
-#define Rechtsom              1
+////#define Bocht
+//#define Linksom               2
+//#define Rechtsom              1
