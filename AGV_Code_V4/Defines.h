@@ -9,18 +9,6 @@ Dit is de define file waar alle defines voor de main code instaan.
 #define  Actie_Proces_Obstakel 3
 #define  Actie_Proces_Koers    4
 
-//Pinnen voor linker stepper  //Mogen digitale pinnen zijn
-#define  Pin_Links_Ain2  32
-#define  Pin_Links_Ain1  33
-#define  Pin_Links_Bin1  34
-#define  Pin_Links_Bin2  35
-
-//Pinnen voor retcher stepper
-#define  Pin_Rechts_Ain2 40 
-#define  Pin_Rechts_Ain1 41
-#define  Pin_Rechts_Bin1 42
-#define  Pin_Rechts_Bin2 43
-
 #define  Ultrasoon_Voor_Trigger          12
 #define  Ultrasoon_Links_Voor_Trigger    10
 #define  Ultrasoon_Rechts_Voor_Trigger   8
@@ -39,10 +27,22 @@ Dit is de define file waar alle defines voor de main code instaan.
 //Overige Pinnen
 #define Signaal_Ledjes                  23
 
+//Pinnen voor linker stepper  //Mogen digitale pinnen zijn
+#define  Pin_Links_Ain2  32
+#define  Pin_Links_Ain1  33
+#define  Pin_Links_Bin1  34
+#define  Pin_Links_Bin2  35
+
+//Pinnen voor retcher stepper
+#define  Pin_Rechts_Ain2 40 
+#define  Pin_Rechts_Ain1 41
+#define  Pin_Rechts_Bin1 42
+#define  Pin_Rechts_Bin2 43
+
 //Constanten Defines en Variabelen
 #define STEPS                 200
 #define Motor_Speed_Max       120      
-#define  Motor_Speed_Follow    (Motor_Speed_Max/0.7)   //70% speed voor het volgen van een persoon                 
+#define Motor_Speed_Follow    (Motor_Speed_Max/0.7)   //70% speed voor het volgen van een persoon                 
 #define Motor_Speed_Stop      0    
 
 
