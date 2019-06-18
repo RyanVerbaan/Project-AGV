@@ -18,8 +18,8 @@ Dit is de define file waar alle defines voor de main code instaan.
 //Pinnen voor retcher stepper
 #define  Pin_Rechts_Ain2 40 
 #define  Pin_Rechts_Ain1 41
-#define  Pin_Rechts_Bin1 42
-#define  Pin_Rechts_Bin2 43
+#define  Pin_Rechts_Bin1 44
+#define  Pin_Rechts_Bin2 45
 
 #define  Ultrasoon_Voor_Trigger          12
 #define  Ultrasoon_Links_Voor_Trigger    10
@@ -48,7 +48,7 @@ Dit is de define file waar alle defines voor de main code instaan.
 #define address1 0x22
 
 //Constanten Defines en Variabelen
-#define STEPS     200
+#define STEPS                 200
 #define Motor_Speed_Max       120      
 #define  Motor_Speed_Follow    (Motor_Speed_Max/0.7)   //70% speed voor het volgen van een persoon                 
 #define Motor_Speed_Stop      0    
@@ -61,7 +61,7 @@ Dit is de define file waar alle defines voor de main code instaan.
 #define Arm_Lengte            87,5  //milimeter 1/8 Schaalmodel van 0,7 Meter
 #define Gewas_Afstand         50    //afstand van de gewassen tot de agv (misschien iets meer)
 #define Koers_Value           70    //afstand van de rand van de gewassen tot agv
-#define Koers_Marge           10    //hoeveelheid speelruimte van de koers van de agv
+#define Koers_Marge           30    //hoeveelheid speelruimte van de koers van de agv
 
 //#define Bocht0
 #define Linksom               -1

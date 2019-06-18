@@ -21,6 +21,7 @@ hard-coded address of the module.
 
 #include <Wire.h>
 #include <VL6180X.h>
+#include <Stepper.h>
 
 #define RANGE 1
 

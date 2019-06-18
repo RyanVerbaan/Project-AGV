@@ -6,44 +6,24 @@
 int Stap = 0;
 float Distance = 0;
 int Koers = 0;
-int Bocht = 0;
-int Bochten_Patroon[6] = [Linksom, Rechtsom, Linksom, Linksom, Rechtsom, Linksom];
+int Bocht = -1;
+int Bochten_Patroon[] = [Linksom, Rechtsom, Linksom, Linksom, Rechtsom, Linksom];
 
 Stepper Stepper_Links(STEPS, Pin_Links_Ain2, Pin_Links_Ain1, Pin_Links_Bin1, Pin_Links_Bin2);
 Stepper Stepper_Rechts(STEPS, Pin_Rechts_Ain2, Pin_Rechts_Ain1, Pin_Rechts_Bin1, Pin_Rechts_Bin2);
 
 float Distance_Cal(int trigPin, int echoPin);
+void Init();
+void Bocht_linksom();
+void Bocht_rechtsom();
 
-void setup() {
+void setup()
+{
   Serial.begin(9600);
-
-  //pinModes Ultrasoon
-  pinMode(Ultrasoon_Voor_Trigger, OUTPUT);
-  pinMode(Ultrasoon_Voor_Echo, INPUT);
-  pinMode(Ultrasoon_Links_Voor_Trigger, OUTPUT);
-  pinMode(Ultrasoon_Links_Voor_Echo, INPUT);
-  pinMode(Ultrasoon_Rechts_Voor_Trigger, OUTPUT);
-  pinMode(Ultrasoon_Rechts_Voor_Echo, INPUT);
-  pinMode(Ultrasoon_Links_Achter_Trigger, OUTPUT);
-  pinMode(Ultrasoon_Links_Achter_Echo, INPUT);
-  pinMode(Ultrasoon_Rechts_Achter_Trigger, OUTPUT);
-  pinMode(Ultrasoon_Rechts_Achter_Echo, INPUT);
-
-  //Overige Pinmodes
-  pinMode(Signaal_Ledjes, OUTPUT);
-  pinMode(Shut_ToF_Rechts,OUTPUT);
-  pinMode(Shut_ToF_Links,OUTPUT);
-
-  //Digital Writes
-  digitalWrite(Ultrasoon_Voor_Trigger, LOW);
-  digitalWrite(Ultrasoon_Links_Voor_Trigger, LOW);
-  digitalWrite(Ultrasoon_Rechts_Voor_Trigger, LOW);
-  digitalWrite(Ultrasoon_Links_Achter_Trigger, LOW);
-  digitalWrite(Ultrasoon_Rechts_Achter_Trigger, LOW);
-
 }
 
-void loop() {
+void loop()
+{
   switch(Stap)
   {
     case (Volgmodus):
@@ -60,12 +40,15 @@ void loop() {
       Stepper_Links.step(0);
       Stepper_Rechts.step(0);
       digitalWrite(LedPins, HIGH);
+      delay(2000);
+      digitalWrite(LedPins, LOW);
       break;
     case (Actie_Proces_Object):
       Stepper_Links.step(0);
       Stepper_Rechts.step(0);
       break;
     case (Actie_Proces_Koers):
+      Bocht++;
       break;
   }
   
@@ -133,15 +116,13 @@ void loop() {
       break;
       
     case (Actie_Proces_Koers): //----------------------------------------------------------------
-      if(Bocht == Linksom)
+      if(Bochten_Patroon[Bocht] == Linksom)
       {
-        Stepper_Links.step(1);
-        Stepper_Rechts.step(2); 
+        Bocht_linksom(); 
       }
-      if(Bocht == Rechtsom)
+      if(Bochten_Patroon[Bocht] == Rechtsom)
       {
-        Stepper_Rechts.step(2);
-        Stepper_Links.step(1);
+        Bocht_rechtsom
       }
       if(digitalRead(Eindstand_Pin_Links) == HIGH)
       {
@@ -155,6 +136,57 @@ void loop() {
       
   }
 }
+
+void Bocht_rechtsom()
+{
+  for (int r;r<10;r++)
+  {
+   Stepper_Links.step(1);
+   Stepper_Rechts.step(1);
+   Stepper_Links.step(1); 
+  }
+}
+void Bocht_linksom()
+{
+  for (int r;r<10;r++)
+  {
+   Stepper_Rechts.step(1);
+   Stepper_Links.step(1);
+   Stepper_Rechts.step(1); 
+  }
+}
+
+
+
+
+
+void Init()
+{
+  //pinModes Ultrasoon
+  pinMode(Ultrasoon_Voor_Trigger, OUTPUT);
+  pinMode(Ultrasoon_Voor_Echo, INPUT);
+  pinMode(Ultrasoon_Links_Voor_Trigger, OUTPUT);
+  pinMode(Ultrasoon_Links_Voor_Echo, INPUT);
+  pinMode(Ultrasoon_Rechts_Voor_Trigger, OUTPUT);
+  pinMode(Ultrasoon_Rechts_Voor_Echo, INPUT);
+  pinMode(Ultrasoon_Links_Achter_Trigger, OUTPUT);
+  pinMode(Ultrasoon_Links_Achter_Echo, INPUT);
+  pinMode(Ultrasoon_Rechts_Achter_Trigger, OUTPUT);
+  pinMode(Ultrasoon_Rechts_Achter_Echo, INPUT);
+
+  //Overige Pinmodes
+  pinMode(Signaal_Ledjes, OUTPUT);
+  pinMode(Shut_ToF_Rechts,OUTPUT);
+  pinMode(Shut_ToF_Links,OUTPUT);
+
+  //Digital Writes
+  digitalWrite(Ultrasoon_Voor_Trigger, LOW);
+  digitalWrite(Ultrasoon_Links_Voor_Trigger, LOW);
+  digitalWrite(Ultrasoon_Rechts_Voor_Trigger, LOW);
+  digitalWrite(Ultrasoon_Links_Achter_Trigger, LOW);
+  digitalWrite(Ultrasoon_Rechts_Achter_Trigger, LOW);
+}
+
 
 float Distance_Cal(int trigPin, int echoPin)
 {

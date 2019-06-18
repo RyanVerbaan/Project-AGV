@@ -17,7 +17,10 @@
 #define Pin_Rechts_Bin1  34
 #define Pin_Rechts_Bin2  35
 
-#define Motor_speed_max     120                 //100rpm is max reacheble speed op 5V
+#define STBY_Rechts 29
+#define STBY_Links 28
+
+#define Motor_speed_max     120                 //100rpm if max reacheble speed op 5V
 #define Motor_speed_follow  (Motor_speed_max/7) //70% speed for following person
 #define Motor_speed_half    (Motor_speed_max/2)
 #define Motor_speed_stop    0                   //Set motor stil but is still running
@@ -35,18 +38,11 @@
 #define Ultrasoon_Links_Achter_Echo 5
 #define Ultrasoon_Rechts_Achter_Echo 3
 
+
 Stepper stepper_links(STEPS, Pin_Links_Ain2, Pin_Links_Ain1, Pin_Links_Bin1, Pin_Links_Bin2);
 Stepper stepper_rechts(STEPS, Pin_Rechts_Ain2, Pin_Rechts_Ain1, Pin_Rechts_Bin1, Pin_Rechts_Bin2);
 
 float Distance = 0;
-
-//void Bocht(value voor bocht links of rechts);
-//void Volg_Modus();
-//void Gewas();
-
-int val = 0;
-int i = 0;
-int Tijd = 0;
 
 void setup()
 {
@@ -65,33 +61,35 @@ void setup()
   pinMode(Ultrasoon_Rechts_Achter_Trigger, OUTPUT);
   pinMode(Ultrasoon_Rechts_Achter_Echo, INPUT);
 
+  pinMode(STBY_Rechts, OUTPUT);
+  pinMode(STBY_Links, OUTPUT);
+  
   digitalWrite(Ultrasoon_Voor_Trigger, LOW);
   digitalWrite(Ultrasoon_Links_Voor_Trigger, LOW);
   digitalWrite(Ultrasoon_Rechts_Voor_Trigger, LOW);
   digitalWrite(Ultrasoon_Links_Achter_Trigger, LOW);
   digitalWrite(Ultrasoon_Rechts_Achter_Trigger, LOW);
-  Serial.println("Setup");
 }
 
 void loop()
 {
+
   Distance = Distance_Cal(Ultrasoon_Links_Achter_Trigger, Ultrasoon_Links_Achter_Echo);
   //Serial.println(Distance);
   if(Distance < 100 && Distance > 1)
   {
-    for(int i = 0; i < Aantal_Steps; i++)
-    {
-      stepper_links.step(1);
-      stepper_rechts.step(1);
-    }
+    digitalWrite(STBY_Rechts, HIGH);
+    digitalWrite(STBY_Links, HIGH);
+    stepper_links.step(1);
+    stepper_rechts.step(1);
   }
   else
   {
-    //stepper_links.setSpeed(0);
-    //stepper_rechts.setSpeed(0);
+    digitalWrite(STBY_Rechts, LOW);
+    digitalWrite(STBY_Links, LOW);
   }
-  
 }
+
 
 int Distance_Cal(int trigPin, int echoPin)
 {
