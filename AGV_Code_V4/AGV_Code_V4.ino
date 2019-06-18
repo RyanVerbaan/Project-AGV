@@ -1,5 +1,4 @@
 #include "Defines.h"
-#include "Functies.h"
 #include <Stepper.h>
 #include <Wire.h> 
 #include <VL6180X.h>
@@ -7,16 +6,16 @@
 int Stap = 0;
 float Distance = 0;
 int Koers = 0;
-int Bocht = 0;
-int Bochten_Patroon[6] = [Linksom, Rechtsom, Linksom, Linksom, Rechtsom, Linksom];
+int Bocht = -1;
+int Bochten_Patroon[] = [Linksom, Rechtsom, Linksom, Linksom, Rechtsom, Linksom];
 
 Stepper Stepper_Links(STEPS, Pin_Links_Ain2, Pin_Links_Ain1, Pin_Links_Bin1, Pin_Links_Bin2);
 Stepper Stepper_Rechts(STEPS, Pin_Rechts_Ain2, Pin_Rechts_Ain1, Pin_Rechts_Bin1, Pin_Rechts_Bin2);
 
 float Distance_Cal(int trigPin, int echoPin);
 void Init();
-void Bocht_Linksom();
-void Bocht_Rechtsom();
+void Bocht_linksom();
+void Bocht_rechtsom();
 
 void setup()
 {
@@ -49,6 +48,7 @@ void loop()
       Stepper_Rechts.step(0);
       break;
     case (Actie_Proces_Koers):
+      Bocht++;
       break;
   }
   
@@ -116,13 +116,13 @@ void loop()
       break;
       
     case (Actie_Proces_Koers): //----------------------------------------------------------------
-      if(Bocht == Linksom)
+      if(Bochten_Patroon[Bocht] == Linksom)
       {
-        Bocht_Linksom(); 
+        Bocht_linksom(); 
       }
-      if(Bocht == Rechtsom)
+      if(Bochten_Patroon[Bocht] == Rechtsom)
       {
-        Bocht_Rechtsom
+        Bocht_rechtsom
       }
       if(digitalRead(Eindstand_Pin_Links) == HIGH)
       {
@@ -137,7 +137,7 @@ void loop()
   }
 }
 
-void Bocht_Rechtsom()
+void Bocht_rechtsom()
 {
   for (int r;r<10;r++)
   {
@@ -146,7 +146,7 @@ void Bocht_Rechtsom()
    Stepper_Links.step(1); 
   }
 }
-void Bocht_Linksom()
+void Bocht_linksom()
 {
   for (int r;r<10;r++)
   {
