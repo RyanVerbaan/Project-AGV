@@ -39,8 +39,6 @@ Dit is de define file waar alle defines voor de main code instaan.
 //Overige Pinnen
 #define SDA_Pin                         20
 #define SCL_Pin                         21
-#define Shut_ToF_Rechts                 50
-#define Shut_ToF_Links                  51
 #define Signaal_Ledjes                  23
 
 //Time of Flight Adressen

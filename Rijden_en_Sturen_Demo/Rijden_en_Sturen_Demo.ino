@@ -1,4 +1,4 @@
-#include <Stepper.h>
+ #include <Stepper.h>
 
 
 // links: w b - rz z
@@ -139,7 +139,6 @@ void loop()
         stap = Bocht_Rechtsom;
       }  
       break;
-      
     case (Bocht_Rechtsom):
       stepper_links.step(3);
       stepper_rechts.step(1);
@@ -153,7 +152,6 @@ void loop()
         stap = Rijden;
       }
       break;
-      
     case (Bocht_Linksom):
       stepper_links.step(1);
       stepper_rechts.step(3);
@@ -161,7 +159,7 @@ void loop()
       {
         Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);
         teller = 0;
-      } 
+      }                                                                               
       if (Distance < 80)
       {
         stap = Rijden;
