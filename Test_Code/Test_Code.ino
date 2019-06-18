@@ -44,6 +44,10 @@ void setup()
   pinMode(Ultrasoon_Links_Achter_Echo, INPUT);
   pinMode(Ultrasoon_Rechts_Achter_Trigger, OUTPUT);
   pinMode(Ultrasoon_Rechts_Achter_Echo, INPUT);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
   //Overige Pinmodes
   pinMode(Signaal_Ledjes, OUTPUT);
   pinMode(Shut_ToF_Rechts,OUTPUT);
@@ -107,34 +111,61 @@ void loop()
   {
     case (Idle): 
       //Motoren worden stilgezet en wachten op een volgende activiteit
+<<<<<<< HEAD
         Stepper_Links.step(0);
         Stepper_Links.step(0);
         //Serial.println("Idle State");
+=======
+      Serial.println("Idle State");
+      Stepper_Rechts.step(0);
+      Stepper_Links.step(0);
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
       break;
       
     case (Rijden):
       //Default state de steppers rijden vooruit
+<<<<<<< HEAD
       Stepper_Rechts.step(1);
       Stepper_Links.step(1); 
       //Serial.println("Rijden State");
+=======
+      Serial.println("Rijden State");
+      Stepper_Rechts.step(2);
+      Stepper_Links.step(2);
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
       break;
       
     case (Actie_Proces_Gewas):
       //Stappenmotoren stilzetten en signaal afgeven
+<<<<<<< HEAD
       Actie_Proces_Gewas_Functie();
       //Serial.println("Gewas State");
+=======
+      Serial.println("Gewas State");
+      Actie_Proces_Gewas_Functie();
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
       break;
       
     case (Actie_Proces_Obstakel):
       //Hier worden bomen gedetecteerd aan de zijkant met de ultrasone sensoren
+<<<<<<< HEAD
       Actie_Proces_Obstakel_Functie();
       //Serial.println("Obstakel State");
+=======
+      Serial.println("Obstakel State");
+      Actie_Proces_Obstakel_Functie();
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
       break; 
           
     case (Actie_Proces_Koers):
       //Bijsturen en Bochtnemen
+<<<<<<< HEAD
       Actie_Proces_Koers_Functie(Bocht);
       //Serial.println("Koers State");
+=======
+      Serial.println("Koers State");
+      Actie_Proces_Koers_Functie(Bocht);
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
       break;
       
     case (Volg_Modus):
@@ -160,29 +191,43 @@ void loop()
       break;
 /*------------------------------------------------------------case Rijden overgang-------------------------------------------------------------*/      
     case (Rijden):
+<<<<<<< HEAD
       //Serial.println("Rijden Overgang");
+=======
+      Serial.println("Rijden Overgang");
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
       if(digitalRead(Volgmodus_Autonoom_Knop) == HIGH)
       {
        Stap = Idle;
       }
 /*~~~~~~~~~~~~~~~~~ultrasoon checks~~~~~~~~~~~~~~~~~~~~~~~~~*/      
       Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);                   //Ultrasoon voor kijken
+      Serial.println(Distance);
       if(Distance < Arm_Lengte && Distance > 0)
       {
+<<<<<<< HEAD
          //Serial.print("Ultrasoon voor "); Serial.println(Distance);
+=======
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
          Stap = Actie_Proces_Obstakel;
       }
       
       Distance = Distance_Cal(Ultrasoon_Links_Achter_Trigger, Ultrasoon_Links_Achter_Echo);   //Ultrasoon Links kijken
+      Serial.println(Distance);
       if(Distance < Gewas_Afstand && Distance > 0)
       {
+<<<<<<< HEAD
         //Serial.print("Ultrasoon lachter "); Serial.println(Distance);
+=======
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
         Stap = Actie_Proces_Gewas;
       }
       
       Distance = Distance_Cal(Ultrasoon_Rechts_Achter_Trigger, Ultrasoon_Rechts_Achter_Echo); //Ultrasoon Rechts kijken
+      Serial.println(Distance);
       if(Distance < Gewas_Afstand && Distance > 0)
       {
+<<<<<<< HEAD
 //        Serial.print("Ultrasoon rachter "); Serial.println(Distance);
         Stap = Actie_Proces_Gewas; 
       }
@@ -195,13 +240,28 @@ void loop()
       if(ToF_rechts_waarde > Koers_Value + Koers_Marge)
       {
 //        Serial.print("ToF Rechts "); Serial.println(ToF_rechts_waarde);
+=======
+        Stap = Actie_Proces_Gewas; 
+      }
+
+      //Serial.println(ToF_Rechts.readRangeContinuousMillimeters());
+      if(ToF_Rechts.readRangeContinuousMillimeters() > Koers_Value + Koers_Marge)
+      {
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
         Bocht = Rechtsom;
         //Stap = Actie_Proces_Koers;
       }
+<<<<<<< HEAD
 //      Serial.println("test3");
       if(ToF_links_waarde > Koers_Value + Koers_Marge)
       {
 //        Serial.print("ToF Links "); Serial.println(ToF_links_waarde);
+=======
+
+      //Serial.println(ToF_Links.readRangeContinuousMillimeters());
+      if(ToF_Links.readRangeContinuousMillimeters() > Koers_Value + Koers_Marge)
+      {
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
         Bocht = Linksom;
         //Stap = Actie_Proces_Koers;
       }
@@ -224,6 +284,7 @@ void loop()
       break;     
 /*------------------------------------------------------------case Actie_Proces_Koers overgang-------------------------------------------------------------*/     
     case (Actie_Proces_Koers):
+<<<<<<< HEAD
 //      ToF_rechts_waarde = ToF_Rechts.readRangeContinuousMillimeters();
 //      ToF_links_waarde = ToF_Links.readRangeContinuousMillimeters();
       //Serial.println("Koers Overgang");
@@ -243,6 +304,22 @@ void loop()
       //Serial.println("Volg Overgang");
       Stepper_Links.step(1);
       Stepper_Rechts.step(1);
+=======
+      Serial.println("Koers Overgang");
+      Serial.println(ToF_Rechts.readRangeContinuousMillimeters());
+      if((ToF_Rechts.readRangeContinuousMillimeters() > Koers_Value - Koers_Marge) && ((ToF_Rechts.readRangeContinuousMillimeters() < Koers_Value + Koers_Marge))) //valt Binnen de Marges van de koers
+      {
+        Stap = Rijden;
+      } 
+      Serial.println(ToF_Links.readRangeContinuousMillimeters());
+      if((ToF_Links.readRangeContinuousMillimeters() > Koers_Value - Koers_Marge) && ((ToF_Links.readRangeContinuousMillimeters() < Koers_Value + Koers_Marge))) //valt Binnen de Marges van de koers
+      {
+        Stap = Rijden;
+      } 
+      break;     
+    case (Volg_Modus):
+      Serial.println("Volg Overgang");
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
       if(digitalRead(Volgmodus_Autonoom_Knop) == LOW)
       {
         Stap = Idle;
@@ -291,16 +368,26 @@ void Actie_Proces_Koers_Functie(int Bocht)
 
 void Actie_Proces_Obstakel_Functie()
 {
+<<<<<<< HEAD
       Stepper_Links.step(0);
       Stepper_Rechts.step(0);
+=======
+  Stepper_Links.step(0);
+  Stepper_Rechts.step(0);
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
 }
 
 /*-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+Actie_Proces_Gewas_Functie-+-+-+-+-+-+-+--+-+-+-+-+-+-+-++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+*/
 
 void Actie_Proces_Gewas_Functie()
 {
+<<<<<<< HEAD
   Stepper_Links.step(0);
   Stepper_Rechts.step(0);
+=======
+  Stepper_Links.step(Motor_Speed_Stop);
+  Stepper_Rechts.step(Motor_Speed_Stop);
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
   delay(500);
   digitalWrite(Signaal_Ledjes, HIGH);
   delay(500);
@@ -313,14 +400,24 @@ void Volg_Modus_Functie()
 {
   
   Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);
-  if(Distance < (Arm_Lengte*0.8))
+  if(Distance > Arm_Lengte)
     {
+<<<<<<< HEAD
       Stepper_Links.step(0);
       Stepper_Rechts.step(0);
-    }
-  if(Distance > (Arm_Lengte*1.2))
-  {
+=======
       Stepper_Links.step(1);
       Stepper_Rechts.step(1);
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
+    }
+  if(Distance < Arm_Lengte)
+  {
+<<<<<<< HEAD
+      Stepper_Links.step(1);
+      Stepper_Rechts.step(1);
+=======
+      Stepper_Links.step(0);
+      Stepper_Rechts.step(0);
+>>>>>>> 2c4c4533dcd235ddbb71ad46f33fd9207c5a0eb0
   }
 }//volg_modus_functie

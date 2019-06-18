@@ -51,7 +51,6 @@ void loop()
 
   stepper_links.step(1);
   stepper_rechts.step(1);
-  
 }
 /*
 void Bocht(value voor bocht links of rechts)
