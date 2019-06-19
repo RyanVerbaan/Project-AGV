@@ -2,12 +2,13 @@
 Dit is de define file waar alle defines voor de main code instaan.
 */
 
-#define  Volg_Modus            -1
-#define  Idle                  0
-#define  Rijden                1
-#define  Actie_Proces_Gewas    2
-#define  Actie_Proces_Object   3
-#define  Actie_Proces_Koers    4
+#define  Volg_Modus                      -1
+#define  Idle                            0
+#define  Rijden                          1
+#define  Actie_Proces_Gewas              2
+#define  Actie_Proces_Object             3
+#define  Actie_Proces_Koers              4
+#define  Actie_Proces_Koers_Correctie    5
 
 #define  Ultrasoon_Voor_Trigger          12
 #define  Ultrasoon_Links_Voor_Trigger    10
@@ -23,7 +24,7 @@ Dit is de define file waar alle defines voor de main code instaan.
 
 #define  Signaal_Ledjes                  23
 #define  Volgmodus_Autonoom_Knop         46      //Define hier de pin voor de autonome knop
-
+#define  Volgmodus_Knop                  0
 //Overige Pinnen
 #define Signaal_Ledjes                  23
 
@@ -59,3 +60,5 @@ Dit is de define file waar alle defines voor de main code instaan.
 
 #define Eindstand_Pin_Links_Groot   50
 #define Eindstand_Pin_Rechts_Groot  51
+#define Eindstand_Pin_Links_Klein   49
+#define Eindstand_Pin_Rechts_Klein  50

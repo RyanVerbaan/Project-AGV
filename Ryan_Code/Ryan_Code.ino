@@ -10,6 +10,9 @@ int Koers = 0;
 int Bocht = -1;
 int Bochten_Patroon[] = {Linksom, Rechtsom, Linksom, Linksom, Rechtsom, Linksom};
 
+int Correctie_Links = 0;
+int Correctie_Rechts = 0;
+int tijd = 0;
 Stepper Stepper_Links(STEPS, Pin_Links_Ain2, Pin_Links_Ain1, Pin_Links_Bin1, Pin_Links_Bin2);
 Stepper Stepper_Rechts(STEPS, Pin_Rechts_Ain2, Pin_Rechts_Ain1, Pin_Rechts_Bin1, Pin_Rechts_Bin2);
 
@@ -40,6 +43,8 @@ void setup()
   pinMode(Eindstand_Pin_Rechts_Groot, INPUT_PULLUP);
   pinMode(Standby_Pin_Rechts, OUTPUT);
   pinMode(Standby_Pin_Links, OUTPUT);
+  pinMode(Eindstand_Pin_Links_Klein, INPUT);
+  pinMode(Eindstand_Pin_Rechts_Klein, INPUT);
   
 
   //Digital Writes
@@ -56,6 +61,8 @@ void loop()
 {
   switch(Stap)
   {
+    case (Volg_Modus):
+      break;
     case (Idle):
       digitalWrite(Standby_Pin_Links, LOW);
       digitalWrite(Standby_Pin_Rechts, LOW);
@@ -99,16 +106,39 @@ void loop()
         Bocht = 0;
       }
       break;
+     case (Actie_Proces_Koers_Correctie): //----------------------------------------------------------------
+      if(Correctie_Links == 1)
+      {
+        Stepper_Links.step(3);
+        Correctie_Links = 0;
+      }
+      if(Correctie_Rechts == 1)
+      {
+        Stepper_Rechts.step(3);
+        Correctie_Rechts = 0;
+      }
+      break;
   }
   
   switch(Stap)
   {
-
+    case (Volg_Modus):
+      break;
     case (Idle): //------------------------------------------------------------------
       Stap = Rijden;
       break;
       
     case (Rijden): //--------------------------------------------------------------------
+      if(digitalRead(Eindstand_Pin_Links_Klein) == HIGH)
+      {
+        Stap = Actie_Proces_Koers_Correctie;
+        Correctie_Rechts = 1 ;
+      }
+      if(digitalRead(Eindstand_Pin_Rechts_Klein) == HIGH)
+      {
+        Stap = Actie_Proces_Koers_Correctie;
+        Correctie_Links = 1 ;
+      }
       Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);
       if(Distance < ArmLengte && Distance > 5)
       {
@@ -116,22 +146,26 @@ void loop()
       }
       Stepper_Rechts.step(1);
       Stepper_Links.step(1);
+      
       Distance = Distance_Cal(Ultrasoon_Links_Achter_Trigger, Ultrasoon_Links_Achter_Echo);
+      Serial.print("1 "); Serial.println(Distance);
       if(Distance < Gewas_Afstand && Distance > 1)
       {
         Stap = Actie_Proces_Gewas;
       }
       Stepper_Rechts.step(1);
       Stepper_Links.step(1);
+      
       Distance = Distance_Cal(Ultrasoon_Rechts_Achter_Trigger, Ultrasoon_Rechts_Achter_Echo);
+      Serial.print("2 "); Serial.println(Distance);
       if(Distance < Gewas_Afstand && Distance > 1)
       {
         Stap = Actie_Proces_Gewas;
       }
-//      if((digitalRead(Eindstand_Pin_Rechts_Groot) == HIGH) && (digitalRead(Eindstand_Pin_Links_Groot) == HIGH))
-//      {
-//        Stap = Actie_Proces_Koers;
-//      }
+      if((digitalRead(Eindstand_Pin_Rechts_Groot) == HIGH) && (digitalRead(Eindstand_Pin_Links_Groot) == HIGH))
+      {
+        Stap = Actie_Proces_Koers;
+      }
       break;
 
     case (Actie_Proces_Gewas): //-------------------------------------------------------------
@@ -144,10 +178,16 @@ void loop()
       
     case (Actie_Proces_Object): //--------------------------------------------------------------
       Distance = Distance_Cal(Ultrasoon_Voor_Trigger, Ultrasoon_Voor_Echo);
-      if(Distance > ArmLengte && Distance > 5)
+      tijd = millis();
+      if(tijd == 10000 && Distance > ArmLengte)
       {
         Stap = Rijden;
       }
+      if(Volgmodus_Knop == HIGH)
+      {
+        Stap = Volg_Modus;
+      }
+      
         
 
       break;
@@ -160,6 +200,9 @@ void loop()
       {
         Bocht_rechtsom();
       }
+      Stap = Rijden;
+      break;
+     case (Actie_Proces_Koers_Correctie): //----------------------------------------------------------------
       Stap = Rijden;
       break;
   }
@@ -181,22 +224,42 @@ float Distance_Cal(int trigPin, int echoPin)
 
 void Bocht_rechtsom()
 {
-  for (int r=0;r<50;r++)
+  digitalWrite(Standby_Pin_Rechts, LOW);
+  digitalWrite(Standby_Pin_Links, LOW);
+  delay(2000);
+  digitalWrite(Standby_Pin_Rechts, HIGH);
+  digitalWrite(Standby_Pin_Links, HIGH);
+  for (int r=0;r<600;r++)
   {
    Stepper_Links.step(1);
    Stepper_Rechts.step(1);
    Stepper_Links.step(1); 
   }
+  digitalWrite(Standby_Pin_Rechts, LOW);
+  digitalWrite(Standby_Pin_Links, LOW);
+  delay(2000);
+  digitalWrite(Standby_Pin_Rechts, HIGH);
+  digitalWrite(Standby_Pin_Links, HIGH);
 }
 
 void Bocht_linksom()
 {
-  for (int r=0;r<50;r++)
+  digitalWrite(Standby_Pin_Rechts, LOW);
+  digitalWrite(Standby_Pin_Links, LOW);
+  delay(2000);
+  digitalWrite(Standby_Pin_Rechts, HIGH);
+  digitalWrite(Standby_Pin_Links, HIGH);
+  for (int r=0;r<600;r++)
   {
    Stepper_Rechts.step(1);
    Stepper_Links.step(1);
    Stepper_Rechts.step(1); 
   }
+  digitalWrite(Standby_Pin_Rechts, LOW);
+  digitalWrite(Standby_Pin_Links, LOW);
+  delay(2000);
+  digitalWrite(Standby_Pin_Rechts, HIGH);
+  digitalWrite(Standby_Pin_Links, HIGH);
 }
 
 void Klein_Stukje_Rijden()
