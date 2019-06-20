@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 Ryan
 
 
 jep
+=======
+Jelle
+Ryan
+Kaj
+>>>>>>> a1417c0097e900a584914c36a454a6e71d0b742f

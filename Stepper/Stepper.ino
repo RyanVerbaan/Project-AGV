@@ -16,7 +16,11 @@
 #define Pin_Rechts_Ain1  33
 #define Pin_Rechts_Bin1  34
 #define Pin_Rechts_Bin2  35
+<<<<<<< HEAD
+#define hoi 
+=======
 #define GIY_Test
+>>>>>>> c1d75afbbd235702cf12210ad1fc1a91cbae5fd8
 
 #define STBY_Rechts 29
 #define STBY_Links 28
@@ -48,6 +52,7 @@ float Distance = 0;
 void setup()
 {
   Serial.begin(9600);
+<<<<<<< HEAD
   stepper_links.setSpeed(100);
   stepper_rechts.setSpeed(100);
 
@@ -70,14 +75,37 @@ void setup()
   digitalWrite(Ultrasoon_Rechts_Voor_Trigger, LOW);
   digitalWrite(Ultrasoon_Links_Achter_Trigger, LOW);
   digitalWrite(Ultrasoon_Rechts_Achter_Trigger, LOW);
+=======
+  Serial.println("Stepper test!");
+  stepper_links.setSpeed(120);
+  stepper_rechts.setSpeed(120);
+  digitalWrite(28, HIGH);
+  digitalWrite(29, HIGH);
+  Serial.println("Stepper test klaar!");
+  delay(1000);
+
+>>>>>>> a1417c0097e900a584914c36a454a6e71d0b742f
 }
 
 void loop()
 {
+<<<<<<< HEAD
 
   Distance = Distance_Cal(Ultrasoon_Links_Achter_Trigger, Ultrasoon_Links_Achter_Echo);
   //Serial.println(Distance);
   if(Distance < 100 && Distance > 1)
+=======
+  stepper_links.step(1);
+  delay(2);
+  stepper_rechts.step(1);
+  delay(2);
+}
+/*
+void Bocht(value voor bocht links of rechts)
+{
+  //ToF sensoren uit
+  if(bocht == rechts)                         //Bij een bocht naar links of rechts wordt de binnenste motor op 50% gezet
+>>>>>>> a1417c0097e900a584914c36a454a6e71d0b742f
   {
     digitalWrite(STBY_Rechts, HIGH);
     digitalWrite(STBY_Links, HIGH);

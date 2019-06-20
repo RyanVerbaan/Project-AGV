@@ -43,8 +43,8 @@ void setup()
   pinMode(Eindstand_Pin_Rechts_Groot, INPUT_PULLUP);
   pinMode(Standby_Pin_Rechts, OUTPUT);
   pinMode(Standby_Pin_Links, OUTPUT);
-  pinMode(Eindstand_Pin_Links_Klein, INPUT);
-  pinMode(Eindstand_Pin_Rechts_Klein, INPUT);
+  pinMode(Eindstand_Pin_Links_Klein, INPUT_PULLUP);
+  pinMode(Eindstand_Pin_Rechts_Klein, INPUT_PULLUP);
   
 
   //Digital Writes
@@ -148,7 +148,7 @@ void loop()
       Stepper_Links.step(1);
       
       Distance = Distance_Cal(Ultrasoon_Links_Achter_Trigger, Ultrasoon_Links_Achter_Echo);
-      Serial.print("1 "); Serial.println(Distance);
+      Serial.print("links "); Serial.println(Distance);
       if(Distance < Gewas_Afstand && Distance > 1)
       {
         Stap = Actie_Proces_Gewas;
@@ -157,7 +157,7 @@ void loop()
       Stepper_Links.step(1);
       
       Distance = Distance_Cal(Ultrasoon_Rechts_Achter_Trigger, Ultrasoon_Rechts_Achter_Echo);
-      Serial.print("2 "); Serial.println(Distance);
+      Serial.print("rechts "); Serial.println(Distance);
       if(Distance < Gewas_Afstand && Distance > 1)
       {
         Stap = Actie_Proces_Gewas;
@@ -169,7 +169,8 @@ void loop()
       break;
 
     case (Actie_Proces_Gewas): //-------------------------------------------------------------
-      Distance = Distance_Cal(Ultrasoon_Rechts_Achter_Trigger, Ultrasoon_Rechts_Achter_Echo);      
+      Distance = Distance_Cal(Ultrasoon_Rechts_Achter_Trigger, Ultrasoon_Rechts_Achter_Echo);//kijken we niet naar links?
+      Serial.print("apg: "); Serial.println(Distance);    
       if(Distance > Gewas_Afstand && Distance > 5)
       {
         Stap = Rijden;
