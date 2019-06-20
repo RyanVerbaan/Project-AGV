@@ -16,6 +16,7 @@
 #define Pin_Rechts_Ain1  33
 #define Pin_Rechts_Bin1  34
 #define Pin_Rechts_Bin2  35
+#define hoi 
 
 #define Motor_speed_max     120                 //100rpm is max reacheble speed op 5V
 #define Motor_speed_follow  (Motor_speed_max/7) //70% speed for following person
@@ -41,6 +42,8 @@ void setup()
   Serial.println("Stepper test!");
   stepper_links.setSpeed(120);
   stepper_rechts.setSpeed(120);
+  digitalWrite(28, HIGH);
+  digitalWrite(29, HIGH);
   Serial.println("Stepper test klaar!");
   delay(1000);
 
@@ -48,9 +51,10 @@ void setup()
 
 void loop()
 {
-
   stepper_links.step(1);
+  delay(2);
   stepper_rechts.step(1);
+  delay(2);
 }
 /*
 void Bocht(value voor bocht links of rechts)
