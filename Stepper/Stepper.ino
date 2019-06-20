@@ -16,6 +16,7 @@
 #define Pin_Rechts_Ain1  33
 #define Pin_Rechts_Bin1  34
 #define Pin_Rechts_Bin2  35
+#define GIY_Test
 
 #define Motor_speed_max     120                 //100rpm is max reacheble speed op 5V
 #define Motor_speed_follow  (Motor_speed_max/7) //70% speed for following person
