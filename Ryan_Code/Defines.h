@@ -2,12 +2,13 @@
 Dit is de define file waar alle defines voor de main code instaan.
 */
 
-#define  Volg_Modus            -1
-#define  Idle                  0
-#define  Rijden                1
-#define  Actie_Proces_Gewas    2
-#define  Actie_Proces_Obstakel 3
-#define  Actie_Proces_Koers    4
+#define  Volg_Modus                      -1
+#define  Idle                            0
+#define  Rijden                          1
+#define  Actie_Proces_Gewas              2
+#define  Actie_Proces_Object             3
+#define  Actie_Proces_Koers              4
+#define  Actie_Proces_Koers_Correctie    5
 
 #define  Ultrasoon_Voor_Trigger          12
 #define  Ultrasoon_Links_Voor_Trigger    10
@@ -23,7 +24,7 @@ Dit is de define file waar alle defines voor de main code instaan.
 
 #define  Signaal_Ledjes                  23
 #define  Volgmodus_Autonoom_Knop         46      //Define hier de pin voor de autonome knop
-
+#define  Volgmodus_Knop                  0
 //Overige Pinnen
 #define Signaal_Ledjes                  23
 
@@ -50,11 +51,14 @@ Dit is de define file waar alle defines voor de main code instaan.
 
 
 #define Rij_Snelheid          512
-#define Arm_Lengte            87,5  //milimeter 1/8 Schaalmodel van 0,7 Meter
+#define ArmLengte            100  //milimeter 1/8 Schaalmodel van 0,7 Meter
 #define Gewas_Afstand         50    //afstand van de gewassen tot de agv (misschien iets meer)
 #define Koers_Value           70    //afstand van de rand van de gewassen tot agv
 #define Koers_Marge           10    //hoeveelheid speelruimte van de koers van de agv
 
-////#define Bocht
-//#define Linksom               2
-//#define Rechtsom              1
+#define LedPins               0
+
+#define Eindstand_Pin_Links_Groot   50
+#define Eindstand_Pin_Rechts_Groot  51
+#define Eindstand_Pin_Links_Klein   49
+#define Eindstand_Pin_Rechts_Klein  50

@@ -16,6 +16,7 @@
 #define Pin_Rechts_Ain1  33
 #define Pin_Rechts_Bin1  34
 #define Pin_Rechts_Bin2  35
+#define GIY_Test
 
 #define STBY_Rechts 29
 #define STBY_Links 28
